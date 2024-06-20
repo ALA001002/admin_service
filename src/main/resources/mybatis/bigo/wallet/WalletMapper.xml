@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.WalletMapper">
+
+	<resultMap type="Wallet" id="WalletResult">
+		<id     property="id"           column="id" />
+		<result property="uid"       	column="uid" />
+		<result property="type"       	column="type" />
+		<result property="currency"     column="currency" />
+		<result property="balance"      column="balance" />
+		<result property="frozen"  		column="frozen"  />
+		<result property="order"      column="order" />
+	</resultMap>
+	
+	<select id="listWallet" parameterType="Wallet" resultType="AccountVO">
+		select
+			bw.id,
+		    bw.uid,
+		    bw.type,
+		    bw.currency,
+		    bw.balance,
+		    bw.frozen,
+		    bw.order,
+		    bc.virtual,
+		    bc.status,
+		    bc.sup_recharge as supRecharge,
+			bc.sup_withdraw as supWithdraw,
+			bc.sup_exchange as supExchange,
+			bc.sup_normal_contract as supNormalContract,
+			bc.sup_time_contract as supTimeContract
+		from bg_wallet bw
+		left join bg_currency bc on bc.currency = bw.currency
+		where 1=1
+		<if test="uid != null and uid != ''">and bw.uid = #{uid} </if>
+		<if test="currency != null and currency != ''">and bw.currency = #{currency} </if>
+		<if test="type != null and uid != ''">and bw.type = #{type} </if>
+		order by bc.`order` asc
+	</select>
+	<select id="getWallet" parameterType="Wallet" resultMap="WalletResult">
+		select * from bg_wallet
+		where 1=1
+		<if test="uid != null and uid != ''">and uid = #{uid} </if>
+		<if test="currency != null and currency != ''">and currency = #{currency} </if>
+		<if test="type != null and uid != ''">and type = #{type} </if>
+	</select>
+	<insert id="insertWallet" parameterType="Wallet" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_wallet(
+ 			<if test="uid != null">uid,</if>
+			<if test="type != null">type,</if>
+			<if test="order != null">`order`,</if>
+ 			<if test="currency != null and currency != ''">currency,</if>
+			<if test="balance != null and balance != ''">balance,</if>
+			<if test="frozen != null and frozen != ''">frozen,</if>
+			create_time
+ 		)values(
+ 			<if test="uid != null">#{uid},</if>
+			<if test="type != null">#{type},</if>
+			<if test="order != null">#{order},</if>
+			<if test="currency != null and currency != ''">#{currency},</if>
+			<if test="balance != null and balance != ''">#{balance},</if>
+ 			<if test="frozen != null and frozen != ''">#{frozen},</if>
+ 			now()
+ 		)
+	</insert>
+
+	<insert id="batchInsert">
+		insert into bg_wallet(uid,type,`order`,currency,balance,frozen,create_time) values
+		<foreach item="wallet" index="index" collection="list" separator=",">
+			(#{wallet.uid},#{wallet.type},#{wallet.order},#{wallet.currency},#{wallet.balance},#{wallet.frozen},now())
+		</foreach>
+	</insert>
+
+	<update id="addBalance" parameterType="AssetChange">
+		update bg_wallet set balance = balance + #{amount} where id = #{walletId}
+	</update>
+
+	<update id="subBalance" parameterType="AssetChange">
+		update bg_wallet set balance = balance - #{amount} where id = #{walletId}
+	</update>
+
+	<update id="addFrozen" parameterType="AssetChange">
+		update bg_wallet set frozen = frozen + #{amount} where id = #{walletId}
+	</update>
+
+	<update id="subFrozen" parameterType="AssetChange">
+		update bg_wallet set frozen = frozen - #{amount} where id = #{walletId}
+	</update>
+
+	<select id="getForUpdate" parameterType="Wallet" resultMap="WalletResult">
+		select * from bg_wallet where uid = #{uid} and type = #{type} and currency = #{currency} for update
+	</select>
+
+	<select id="getById" parameterType="Long" resultMap="WalletResult">
+		select * from bg_wallet where id = #{id}
+	</select>
+
+	<select id="listByEntity" parameterType="WalletEntity" resultType="WalletEntity">
+		select
+			bw.id,
+		   	bw.uid,
+			IFNULL(u.phone, u.email) as username,
+		   	bw.currency,
+		   	bw.type,
+			bw.balance,
+		   	bw.frozen,
+			bw.create_time as createTime,
+		    u.status as userStatus
+		from bg_wallet bw
+		left join bg_user u on u.uid = bw.uid
+		where 1=1
+		<if test="uids != null">and bw.uid in (${uids}) </if>
+		<if test="currency != null and currency != ''">and bw.currency = #{currency} </if>
+		<if test="type != null">and bw.type = #{type} </if>
+		<if test="username != null and username !=''">
+			and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+		</if>
+		<if test="agentId != null">
+			and u.top_uid = #{agentId}
+		</if>
+		order by bw.currency desc
+	</select>
+
+
+
+	<select id="countUserHasMoney" parameterType="String" resultType="Integer">
+		select count(1) from (select IFNULL(sum(bg.balance),0) as balance from bg_wallet bg GROUP BY bg.uid HAVING bg.uid in (${uids})) a where a.balance > 0
+	</select>
+
+	<select id="getByUserWallet" parameterType="Wallet" resultType="Wallet">
+		select * from bg_wallet
+		where  1=1
+		<if test="uid != null">and uid = #{uid} </if>
+		<if test="currency != null and currency != ''">and currency = #{currency} </if>
+		<if test="type != null">and type = #{type} </if>
+	</select>
+
+	<select id="listForzenWallet" parameterType="Wallet" resultType="Wallet">
+		select * from bg_wallet where frozen &gt; 0 and currency = #{currency} and type = #{type} limit 0,100
+	</select>
+
+
+	<update id="changeLockFrozen" parameterType="Wallet">
+		update bg_wallet set frozen = #{changeAmount} where id = #{id} and frozen = #{frozen}
+	</update>
+
+
+	<update id="changeLockBalance" parameterType="Wallet">
+		update bg_wallet set balance = #{changeAmount} where id = #{id} and balance = #{balance}
+	</update>
+
+	<select id="countUserInfo" resultType="java.util.Map">
+		select
+		bw.uid userId,
+		bw.currency coin,
+		bw.balance balanceValue
+		from
+		bg_wallet bw left join bg_user bu on bw.uid = bu.uid
+		where bw.type =0
+		and bw.uid in
+		<foreach collection="uidList" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+		  <if test="authStatus != null">
+			  and bu.auth_status = #{authStatus}
+		  </if>
+		 and bu.status != 2
+	</select>
+
+	<select id="converts" parameterType="Wallet">
+		UPDATE bg_wallet
+		SET balance = balance + #{balance}
+		WHERE
+		   currency = #{currency}
+		  and type = #{type}
+	</select>
+
+	<select id="releaseWalletList" parameterType="WalletEntity" resultType="WalletEntity">
+		select
+			bw.id,
+			bw.uid,
+			bw.currency,
+			bw.type,
+			bw.balance,
+			bw.frozen,
+			bw.create_time as createTime
+		from
+		    bg_wallet bw
+		where
+		    bw.type =0
+		  	<if test="currency != null">
+		    and bw.currency = #{currency}
+			</if>
+		<if test="uid != null">
+			and bw.uid = #{uid}
+		</if>
+		and bw.balance &gt;0
+	</select>
+
+	<select id="releaseWallet" parameterType="WalletEntity" resultType="WalletEntity">
+		select
+		bw.id,
+		bw.uid,
+		bw.currency,
+		bw.type,
+		bw.balance,
+		bw.frozen,
+		bw.create_time as createTime
+		from
+		bg_wallet bw
+		where
+		bw.type =0
+		and bw.currency = #{currency}
+		and bw.uid = #{uid}
+	</select>
+</mapper> 

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.notify.mapper.QuickMessageMapper">
+
+	<sql id="selectMessage">
+		id,message
+	</sql>
+	<resultMap id="QuickMessage" type="QuickMessage">
+		<id     property="id"           column="id" />
+		<result property="message"       	column="message" />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="seq"    column="seq"    />
+	</resultMap>
+
+	<sql id="selectQuickMessageVo">
+        select id, message, del_flag, seq from quick_message
+    </sql>
+
+	<select id="list" resultType="QuickMessage">
+		select
+			<include refid="selectMessage"/>
+		from quick_message
+		where del_flag=0 order by seq desc;
+	</select>
+
+	<select id="selectQuickMessageList" parameterType="QuickMessage" resultMap="QuickMessage">
+		<include refid="selectQuickMessageVo"/>
+		<where>
+			<if test="message != null  and message != ''"> and message = #{message}</if>
+		</where>
+	</select>
+
+	<select id="selectQuickMessageById" parameterType="Long" resultMap="QuickMessage">
+		<include refid="selectQuickMessageVo"/>
+		where id = #{id}
+	</select>
+
+	<insert id="insertQuickMessage" parameterType="QuickMessage" useGeneratedKeys="true" keyProperty="id">
+		insert into quick_message
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="message != null">message,</if>
+			<if test="delFlag != null">del_flag,</if>
+			<if test="seq != null">seq,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="message != null">#{message},</if>
+			<if test="delFlag != null">#{delFlag},</if>
+			<if test="seq != null">#{seq},</if>
+		</trim>
+	</insert>
+
+	<update id="updateQuickMessage" parameterType="QuickMessage">
+		update quick_message
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="message != null">message = #{message},</if>
+			<if test="delFlag != null">del_flag = #{delFlag},</if>
+			<if test="seq != null">seq = #{seq},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteQuickMessageById" parameterType="Long">
+        delete from quick_message where id = #{id}
+    </delete>
+
+	<delete id="deleteQuickMessageByIds" parameterType="String">
+		delete from quick_message where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.marketsituation.mapper.SlipDotMapper">
+
+	<resultMap type="SlipDot" id="SlipDotResult">
+		<id     property="id"       	column="id"      />
+		<result property="symbol"     	column="symbol"  />
+		<result property="adjustPrice"     column="adjust_price"     />
+		<result property="status"  		column="status"  />
+		<result property="startDotTime"        column="start_dot_time"   />
+		<result property="stopDotTime"       	column="stop_dot_time"    />
+		<result property="createTime"    column="create_time"   />
+		<result property="creatorId"    column="creator_id"   />
+		<result property="deleted"    column="deleted"   />
+	</resultMap>
+	
+	<select id="getById" parameterType="Long" resultMap="SlipDotResult">
+		select * from bg_slip_dot where id = #{id} and deleted = 0
+	</select>
+
+	<select id="listByEntity" parameterType="SlipDot" resultType="SlipDot">
+		select
+		   sd.id,
+		   sd.symbol,
+		   sd.adjust_price as adjustPrice,
+		   sd.status,
+		   sd.start_dot_time as startDotTime,
+		   sd.stop_dot_time as stopDotTime,
+		   sd.create_time as createTime,
+		   sd.creator_id as creatorId,
+		   sd.deleted,
+		   su.user_name as creatorName
+		from bg_slip_dot sd
+		left join sys_user su on su.user_id = sd.creator_id
+		<where>
+			<if test="id != null">and sd.id = #{id} </if>
+			<if test="status != null">and sd.status = #{status} </if>
+			<if test="deleted != null">and sd.deleted = #{deleted} </if>
+			<if test="symbol != null and symbol != ''">and sd.symbol = #{symbol} </if>
+		</where>
+		order by sd.id desc
+	</select>
+	
+	<insert id="insert" parameterType="SlipDot" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_slip_dot(symbol,adjust_price,status,creator_id,create_time)
+ 		values(#{symbol},#{adjustPrice},#{status},#{creatorId},	now())
+	</insert>
+
+	<update id="update" parameterType="SlipDot" >
+		update bg_slip_dot
+		<set>
+			<if test="status != null"> `status` = #{status}, </if>
+			<if test="startDotTime != null"> start_dot_time = #{startDotTime}, </if>
+			<if test="stopDotTime == null"> stop_dot_time = null, </if>
+			<if test="stopDotTime != null"> stop_dot_time = #{stopDotTime}, </if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getRunningDotBySymbol" parameterType="String" resultMap="SlipDotResult">
+		select * from bg_slip_dot where `status` = 1 and symbol = #{symbol} and deleted = 0
+	</select>
+
+	<select id="listSlipDotByDate" parameterType="Map" resultMap="SlipDotResult">
+		select *
+		from bg_slip_dot
+		where `status` &gt; 0 and symbol = #{symbol}
+		and (NOT (
+		(stop_dot_time &lt; #{startTime})
+		OR (start_dot_time &gt; #{endTime})
+		) OR (start_dot_time &lt;= #{endTime} and stop_dot_time is null))
+	</select>
+
+	<update id="deleteLogical" parameterType="Long" >
+		update bg_slip_dot set deleted = 1 where id=#{id}
+	</update>
+
+	<insert id="insertDotRecord" parameterType="DotRecord" useGeneratedKeys="true" keyProperty="id">
+		insert into bg_dot_record (dot_id,`type`,operator_id,operate_time)
+		values (#{dotId}, #{type}, #{operatorId},now())
+	</insert>
+
+
+	
+</mapper> 

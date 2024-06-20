@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.userinfo.mapper.LevelAwardMapper">
+    
+    <resultMap type="LevelAward" id="LevelAwardResult">
+        <result property="id"    column="id"    />
+        <result property="uid"    column="uid"    />
+        <result property="level"    column="level"    />
+        <result property="awardAmount"    column="award_amount"    />
+        <result property="requireUser"    column="require_user"    />
+        <result property="teamAsset"    column="team_asset"    />
+        <result property="getStatus"    column="get_status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectLevelAwardVo">
+        select id, uid, level, award_amount, require_user, team_asset, get_status, create_time from bg_level_award
+    </sql>
+
+    <select id="selectLevelAwardList" parameterType="LevelAward" resultMap="LevelAwardResult">
+        <include refid="selectLevelAwardVo"/>
+        <where>  
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="level != null "> and level = #{level}</if>
+            <if test="awardAmount != null "> and award_amount = #{awardAmount}</if>
+            <if test="requireUser != null "> and require_user = #{requireUser}</if>
+            <if test="teamAsset != null "> and team_asset = #{teamAsset}</if>
+            <if test="getStatus != null "> and get_status = #{getStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectLevelAwardById" parameterType="Long" resultMap="LevelAwardResult">
+        <include refid="selectLevelAwardVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLevelAward" parameterType="LevelAward" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_level_award
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">uid,</if>
+            <if test="level != null">level,</if>
+            <if test="awardAmount != null">award_amount,</if>
+            <if test="requireUser != null">require_user,</if>
+            <if test="teamAsset != null">team_asset,</if>
+            <if test="getStatus != null">get_status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">#{uid},</if>
+            <if test="level != null">#{level},</if>
+            <if test="awardAmount != null">#{awardAmount},</if>
+            <if test="requireUser != null">#{requireUser},</if>
+            <if test="teamAsset != null">#{teamAsset},</if>
+            <if test="getStatus != null">#{getStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLevelAward" parameterType="LevelAward">
+        update bg_level_award
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="awardAmount != null">award_amount = #{awardAmount},</if>
+            <if test="requireUser != null">require_user = #{requireUser},</if>
+            <if test="teamAsset != null">team_asset = #{teamAsset},</if>
+            <if test="getStatus != null">get_status = #{getStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLevelAwardById" parameterType="Long">
+        delete from bg_level_award where id = #{id}
+    </delete>
+
+    <delete id="deleteLevelAwardByIds" parameterType="String">
+        delete from bg_level_award where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

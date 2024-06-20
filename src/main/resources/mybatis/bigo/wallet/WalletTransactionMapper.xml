@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.WalletTransactionMapper">
+
+	<resultMap type="WalletTransaction" id="WalletTransactionResult">
+		<id     property="id"           column="id" />
+		<result property="type"       	column="type" />
+		<result property="coin"     column="coin" />
+		<result property="money"      column="money" />
+		<result property="fee"  		column="fee"  />
+		<result property="from"       	column="from" />
+		<result property="to"     column="to" />
+		<result property="status"      column="status" />
+		<result property="hash"  		column="hash"  />
+		<result property="createTime"  		column="create_time"  />
+		<result property="error"  		column="error"  />
+		<result property="handleStatus"  		column="handle_status"  />
+		<result property="convertedPrice"  		column="converted_price"  />
+		<result property="symbolPrice"  		column="symbol_price"  />
+	</resultMap>
+	
+	<insert id="insert" parameterType="WalletTransaction" useGeneratedKeys="true" keyProperty="id">
+		insert into wallet_transaction(coin, `type`, money, `status`, handle_status, `to`, create_time<if test="hash != null">, hash</if>)
+ 		values( #{coin}, #{type}, #{money}, #{status}, #{handleStatus}, #{to}, now() <if test="hash != null">, #{hash}</if> )
+	</insert>
+
+	<select id="listTransaction" parameterType="WalletTransaction" resultType="WalletTransaction">
+		select
+			wt.id,
+		    wa.uid,
+			IFNULL(bu.phone, bu.email) as username,
+		   	bu.parent_uid as parentUid,
+		   	bu.top_uid as topUid,
+			wt.type,
+			wt.coin,
+			wt.money,
+		    wt.converted_price as convertedPrice,
+		    wt.symbol_price as symbolPrice,
+			wt.fee,
+			wt.`from`,
+			wt.`to`,
+			wt.`status`,
+			wt.`hash`,
+			wt.create_time as createTime,
+			wt.`error`,
+			wt.handle_status as handleStatus
+		from wallet_transaction wt
+		left join wallet_address wa on wa.address = wt.`to` and wa.coin = wt.coin
+		left join bg_user bu on wa.uid = bu.uid
+		<where>
+			<if test="lowerUids != null">
+			  and wa.uid in (${lowerUids})
+			</if>
+			<if test="uid != null">
+			  and wa.uid = #{uid}
+			</if>
+			<if test="username != null and username !=''">
+				and (bu.phone like concat('%',#{username},'%') or bu.email like concat('%',#{username},'%'))
+			</if>
+			<if test="topUid != null">
+				and bu.top_uid = #{topUid}
+			</if>
+			<if test="status != null">
+			  and wt.`status` = #{status}
+			</if>
+			<if test="coin != null and coin != ''">
+			  and wt.coin = #{coin}
+			</if>
+			<if test="type != null">
+			  and wt.`type` = #{type}
+			</if>
+			<if test="from != null">
+				and wt.`from` = #{from}
+			</if>
+			<if test="to != null">
+				and wt.`to` = #{to}
+			</if>
+			<if test="hash != null">
+				and wt.`hash` = #{hash}
+			</if>
+			<if test="handleStatus != null">
+			  and wt.`handle_status` = #{handleStatus}
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(wt.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(u.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by wt.create_time desc
+	</select>
+
+	<update id="updateHandleStatus" parameterType="WalletTransaction">
+		update wallet_transaction set handle_status = 1
+		<if test="convertedPrice != null">,converted_price = #{convertedPrice}</if>
+		<if test="symbolPrice != null">,symbol_price = #{symbolPrice}</if>
+		where id = #{id}
+	</update>
+
+	<update id="updateTransaction" parameterType="Long">
+		update wallet_transaction set handle_status = #{handleStatus}
+		<if test="error != null and error != ''">
+			,error = #{error}
+		</if>
+		where id = #{id}
+	</update>
+
+	<update id="doCollect">
+		update wallet_address set `status` = 0 where (`status` != 1 or `status` is null) and coin != 'BTC' and balance > 0.01 and address is not null
+	</update>
+
+	<select id="getBtcTxids" resultType="java.lang.String">
+		select group_concat(hash) from wallet_transaction where coin = 'BTC'
+	</select>
+
+	<select id="listSymbolPrice" resultType="WalletTransaction">
+		select
+			wt.id,
+			wt.type,
+			wt.coin,
+			wt.money,
+			wt.converted_price as convertedPrice,
+			wt.symbol_price as symbolPrice,
+			wt.fee,
+			wt.`from`,
+			wt.`to`,
+			wt.`status`,
+			wt.`hash`,
+			wt.create_time as createTime,
+			wt.`error`,
+			wt.handle_status as handleStatus
+		from wallet_transaction wt
+		where wt.type = 1 and wt.coin != 'USDT' and wt.symbol_price &lt;= 0 limit 0, 100
+	</select>
+	<select id="listByTxId" parameterType="java.lang.String" resultType="WalletTransaction">
+		select * from wallet_transaction where hash = #{hash}
+	</select>
+</mapper> 

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.TimeContractMapper">
+
+	<resultMap type="TimeContract" id="TimeContractResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="money"           property="money"          />
+		<result column="fee"       	property="fee"       />
+		<result column="status"     		property="status"     />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="period"      		property="period"     />
+		<result column="buy_time"    	property="buyTime"   />
+		<result column="buy_price"     	property="buyPrice"    />
+		<result column="settlement_time"     property="settlementTime"    />
+		<result column="settlement_price"   property="settlementPrice"  />
+		<result column="settlement_type"   property="settlementType"  />
+		<result column="yield_rate"    property="yieldRate"    />
+		<result column="loss_rate"    property="lossRate"    />
+		<result column="profit"   		property="profit"  />
+		<result column="profit_type"     property="profitType"  />
+		<result column="ip_address"     property="ipAddress"  />
+		<result column="position"     property="position"  />
+	</resultMap>
+
+	<resultMap type="TimeContractEntity" id="TimeContractEntityResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="money"           property="money"          />
+		<result column="fee"       	property="fee"       />
+		<result column="status"     		property="status"     />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="period"      		property="period"     />
+		<result column="buy_time"    	property="buyTime"   />
+		<result column="buy_price"     	property="buyPrice"    />
+		<result column="settlement_time"     property="settlementTime"    />
+		<result column="settlement_price"   property="settlementPrice"  />
+        <result column="settlement_type"   property="settlementType"  />
+		<result column="yield_rate"    property="yieldRate"    />
+		<result column="loss_rate"    property="lossRate"    />
+		<result column="profit"   		property="profit"  />
+		<result column="profit_type"     property="profitType"  />
+		<result column="username"     property="username"  />
+		<result column="userStatus"     property="userStatus"  />
+		<result column="ip_address"     property="ipAddress"  />
+		<result column="position"     property="position"  />
+	</resultMap>
+	
+	<insert id="insertContract" parameterType="Contract" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_time_contract(
+			order_no, uid, symbol, currency, money, fee, `status`, trade_type, period, buy_time, buy_price, settlement_time, settlement_type, yield_rate, loss_rate, ip_address, `position`
+ 		)value (
+			#{orderNo}, #{uid}, #{symbol}, #{currency}, #{money}, #{fee}, #{status}, #{tradeType}, #{period}, now(), #{buyPrice},#{settlementTime},#{settlementType},#{yieldRate}, #{lossRate}, #{ipAddress}, #{position}
+ 		)
+	</insert>
+
+	<select id="listContract" parameterType="TimeContract" resultMap="TimeContractResult">
+		select * from bg_time_contract
+		<where>
+			<if test="uid != null">and uid = #{uid} </if>
+			<if test="status != null">and `status` = #{status} </if>
+			<if test="symbol != null and symbol != ''">and symbol = #{symbol} </if>
+			<if test="tradeType != null">and trade_type = #{tradeType} </if>
+		</where>
+		order by settlement_time desc
+	</select>
+
+	<select id="getByUidAndContractId" parameterType="ContractQueryParam" resultMap="TimeContractResult">
+		select * from bg_time_contract
+		where uid=#{uid} and id = #{contractId}
+	</select>
+
+	<select id="getById" parameterType="Long" resultMap="TimeContractResult">
+		select * from bg_time_contract
+		where id = #{id}
+	</select>
+
+	<update id="closeContract" parameterType="TimeContract" >
+		update bg_time_contract set
+		   `status` = #{status},
+		   settlement_price = #{settlementPrice},
+		   settlement_type = #{settlementType},
+		   profit = #{profit},
+		   profit_type = #{profitType}
+		where id = #{id}
+	</update>
+
+	<select id="listByEntity" parameterType="TimeContractEntity" resultMap="TimeContractEntityResult">
+		select c.*,IFNULL(u.phone, u.email) as username, u.status as userStatus
+		from bg_time_contract c
+		left join bg_user u on u.uid=c.uid
+		<where>
+			<if test="id != null">and c.id = #{id} </if>
+			<if test="orderNo != null and orderNo != ''">and c.order_no = #{orderNo} </if>
+			<if test="uid != null">and c.uid = #{uid} </if>
+			<if test="status != null">and c.`status` = #{status} </if>
+			<if test="currency != null and currency != ''">and c.currency = #{currency} </if>
+			<if test="symbol != null and symbol != ''">and c.symbol = #{symbol} </if>
+			<if test="agentId != null">and u.top_uid = #{agentId} </if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+		   <if test="agentId != null">
+			   and u.top_uid = #{agentId}
+		   </if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(c.buy_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(c.buy_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by c.settlement_time desc,c.buy_time desc
+	</select>
+
+	<select id="getTotalFeeByUid" resultType="BigDecimal">
+		select IFNULL(sum(fee), 0) from bg_time_contract where uid=#{uid} and currency=#{currency}
+	</select>
+
+	<select id="getTotalAmountByUid" resultType="BigDecimal">
+		select IFNULL(sum(money), 0) from bg_time_contract where uid=#{uid} and currency=#{currency} and `status`=0
+	</select>
+
+	<update id="updateSettType" parameterType="TimeContract">
+		update bg_time_contract set settlement_type = #{settlementType} where id = #{id} and settlement_time &gt; now()
+	</update>
+	
+</mapper> 

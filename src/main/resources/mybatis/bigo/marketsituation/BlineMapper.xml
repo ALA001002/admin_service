@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.marketsituation.mapper.BlineMapper">
+
+	<resultMap type="Bline" id="BlineResult">
+		<id     property="id"       	column="id"      />
+		<result property="bid"       	column="bid"  />
+		<result property="symbol"     	column="symbol"  />
+		<result property="tradeId"     column="trade_id"     />
+		<result property="amount"  		column="amount"  />
+		<result property="price"        column="price"   />
+		<result property="realPrice"        column="real_price"   />
+		<result property="ts"       	column="ts"    />
+		<result property="direction"    column="direction"   />
+	</resultMap>
+	
+	<select id="getMaxTradeIdBySymbol" parameterType="String" resultType="Long">
+		select MAX(trade_id) from bg_bline where symbol = #{symbol}
+	</select>
+
+	<select id="getPerDayFirstTrade" parameterType="java.util.Map" resultMap="BlineResult">
+		select * from bg_bline where symbol = #{symbol} and ts &gt; #{zeroTime} ORDER BY ts ASC limit 1
+	</select>
+
+	<select id="listByTime" parameterType="java.util.Map" resultMap="BlineResult">
+		select * from bg_bline where symbol = #{symbol} and ts &gt;= #{startTime} and ts &lt;= #{endTime} ORDER BY ts ASC
+	</select>
+	
+	<insert id="insertBline" parameterType="Bline" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_bline(
+			bid,
+			symbol,
+			trade_id,
+			amount,
+			price,
+			real_price,
+			ts,
+			direction
+ 		)values(
+			#{bid},
+			#{symbol},
+			#{tradeId},
+			#{amount},
+			#{price},
+			#{realPrice},
+			#{ts},
+			#{direction}
+ 		)
+	</insert>
+
+	<insert id="batchInsert">
+		insert into bg_bline(bid,symbol,trade_id,amount,price,real_price,ts,direction) values
+		<foreach item="bline" index="index" collection="list" separator=",">
+			(#{bline.bid},#{bline.symbol},#{bline.tradeId},#{bline.amount},#{bline.price},#{bline.realPrice},#{bline.ts},#{bline.direction})
+		</foreach>
+	</insert>
+
+	
+</mapper> 

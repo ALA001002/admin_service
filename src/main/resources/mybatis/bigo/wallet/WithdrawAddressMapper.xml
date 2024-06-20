@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.WithdrawAddressMapper">
+    
+    <resultMap type="WithdrawAddress" id="WithdrawAddressResult">
+        <result property="id"    column="id"    />
+        <result property="uid"    column="uid"    />
+        <result property="walletId"    column="wallet_id"    />
+        <result property="coin"    column="coin"    />
+        <result property="address"    column="address"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectWithdrawAddressVo">
+        select id, uid, wallet_id, coin, address, create_time,remark from bg_withdraw_address
+    </sql>
+
+    <select id="selectWithdrawAddressList" parameterType="WithdrawAddress" resultType="WithdrawAddress">
+        SELECT
+            bwa.id,
+            bwa.uid,
+            bwa.wallet_id as walletId,
+            bwa.coin,
+            bwa.address,
+            bwa.create_time as createTime,
+            bwa.remark,
+            IFNULL(bu.phone, bu.email) as username
+        FROM
+            bg_withdraw_address bwa left join bg_user bu on bwa.uid = bu.uid
+        <where>  
+            <if test="uid != null "> and bwa.uid = #{uid}</if>
+            <if test="walletId != null "> and bwa.wallet_id = #{walletId}</if>
+            <if test="coin != null  and coin != ''"> and bwa.coin = #{coin}</if>
+            <if test="address != null  and address != ''"> and bwa.address = #{address}</if>
+            <if test="username != null and username !=''">
+                and (bu.phone like concat('%',#{username},'%') or bu.email like concat('%',#{username},'%'))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectWithdrawAddressById" parameterType="Long" resultType="WithdrawAddress">
+        SELECT
+            bwa.id,
+            bwa.uid,
+            bwa.wallet_id as walletId,
+            bwa.coin,
+            bwa.address,
+            bwa.create_time as createTime,
+            bwa.remark,
+            IFNULL(bu.phone, bu.email) as username
+        FROM
+            bg_withdraw_address bwa left join bg_user bu on bwa.uid = bu.uid
+        where bwa.id = #{id}
+    </select>
+        
+    <insert id="insertWithdrawAddress" parameterType="WithdrawAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_withdraw_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">uid,</if>
+            <if test="walletId != null">wallet_id,</if>
+            <if test="coin != null and coin != ''">coin,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">#{uid},</if>
+            <if test="walletId != null">#{walletId},</if>
+            <if test="coin != null and coin != ''">#{coin},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWithdrawAddress" parameterType="WithdrawAddress">
+        update bg_withdraw_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="walletId != null">wallet_id = #{walletId},</if>
+            <if test="coin != null and coin != ''">coin = #{coin},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWithdrawAddressById" parameterType="Long">
+        delete from bg_withdraw_address where id = #{id}
+    </delete>
+
+    <delete id="deleteWithdrawAddressByIds" parameterType="String">
+        delete from bg_withdraw_address where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

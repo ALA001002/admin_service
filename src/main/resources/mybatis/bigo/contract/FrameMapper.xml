@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.FrameMapper">
+	
+	<insert id="insert" parameterType="Frame" useGeneratedKeys="true" keyProperty="id">
+ 		insert into t_frame(
+			uid,
+			contract_id,
+			`type`,
+			real_price,
+			frame_price,
+			operator_id,
+			create_time
+ 		)values(
+			#{uid},
+			#{contractId},
+			#{type},
+			#{realPrice},
+			#{framePrice},
+			#{operatorId},
+			now()
+ 		)
+	</insert>
+
+	<select id="listByParam" parameterType="Frame" resultType="Frame">
+		select
+		       c.id as contractId,
+		       f.uid,
+			   c.order_no as orderNo,
+		       f.type,
+		       f.real_price as realPrice,
+		       f.frame_price as framePrice,
+		       f.operator_id as operatorId,
+		       su.user_name as operatorName,
+		       f.create_time as createTime,
+		       IFNULL(u.phone, u.email) as username
+		from t_frame f
+		left join bg_contract c on c.id = f.contract_id
+		left join bg_user u on u.uid=f.uid
+	   	left join sys_user su on f.operator_id=su.user_id
+		<where>
+			<if test="contractId != null">and f.contract_id = #{contractId} </if>
+			<if test="orderNo != null and orderNo != ''">and c.order_no = #{orderNo} </if>
+			<if test="uid != null">and f.uid = #{uid} </if>
+			<if test="type != null">and f.type = #{type} </if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(f.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(f.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by c.sell_time desc,c.buy_time desc
+	</select>
+
+</mapper> 

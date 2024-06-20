@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.ContractStopInfoMapper">
+
+	<resultMap type="ContractStopParam" id="ContractStopParamResult">
+		<result property="contractId"       column="contract_id"      />
+		<result property="contractPlanId"       	column="contract_plan_id"  />
+		<result property="stopSurplusType"       	column="stop_surplus_type"  />
+		<result property="stopSurplus"     	column="stop_surplus_value"  />
+		<result property="stopLossType"     column="stop_loss_type"     />
+		<result property="stopLoss"     column="stop_loss_value"     />
+	</resultMap>
+
+	<select id="getByContractId" parameterType="ContractStopParam" resultMap="ContractStopParamResult">
+		select * from bg_stop_info where contract_id = #{contractId}
+	</select>
+
+	<select id="getByContractPlanId" parameterType="ContractStopParam" resultMap="ContractStopParamResult">
+		select * from bg_stop_info where contract_plan_id = #{contractPlanId}
+	</select>
+	
+	<insert id="insert" parameterType="ContractStopParam">
+ 		insert into bg_stop_info
+ 		    (contract_id,contract_plan_id,stop_surplus_type,stop_surplus_value,stop_loss_type,stop_loss_value)
+ 		values
+ 			(#{contractId},#{contractPlanId},#{stopSurplusType},#{stopSurplus},#{stopLossType},#{stopLoss})
+	</insert>
+
+	<update id="update" parameterType="ContractStopParam">
+		update bg_stop_info
+		set stop_surplus_type = #{stopSurplusType},
+			stop_surplus_value = #{stopSurplus},
+			stop_loss_type = #{stopLossType},
+			stop_loss_value = #{stopLoss}
+		where contract_id = #{contractId}
+	</update>
+
+	<update id="deleteByContractId" parameterType="Long">
+		delete from bg_stop_info where contract_id = #{contractId}
+	</update>
+
+	
+</mapper> 

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.ico.mapper.IcoBuyRecordMapper">
+    
+    <resultMap type="IcoBuyRecord" id="IcoBuyRecordResult">
+        <result property="id"    column="id"    />
+        <result property="uid"    column="uid"    />
+        <result property="buyCurrency"    column="buy_currency"    />
+        <result property="quoteCurrency"    column="quote_currency"    />
+        <result property="buyNumber"    column="buy_number"    />
+        <result property="buyAmount"    column="buy_amount"    />
+        <result property="buyPrice"    column="buy_price"    />
+        <result property="probability"    column="probability"    />
+        <result property="successNumber"    column="success_number"    />
+        <result property="status"    column="status"    />
+        <result property="releaseTime"    column="release_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectIcoBuyRecordVo">
+        select id, uid, buy_currency, quote_currency, buy_number, buy_amount, buy_price, probability, success_number, status, release_time, create_time from bg_ico_buy_record
+    </sql>
+
+    <select id="selectIcoBuyRecordList" parameterType="IcoBuyRecord" resultMap="IcoBuyRecordResult">
+        <include refid="selectIcoBuyRecordVo"/>
+        <where>  
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="buyCurrency != null  and buyCurrency != ''"> and buy_currency = #{buyCurrency}</if>
+            <if test="quoteCurrency != null  and quoteCurrency != ''"> and quote_currency = #{quoteCurrency}</if>
+            <if test="buyNumber != null "> and buy_number = #{buyNumber}</if>
+            <if test="buyAmount != null "> and buy_amount = #{buyAmount}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="probability != null "> and probability = #{probability}</if>
+            <if test="successNumber != null "> and success_number = #{successNumber}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="releaseTime != null "> and release_time = #{releaseTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectIcoBuyRecordById" parameterType="Long" resultMap="IcoBuyRecordResult">
+        <include refid="selectIcoBuyRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertIcoBuyRecord" parameterType="IcoBuyRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_ico_buy_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">uid,</if>
+            <if test="buyCurrency != null">buy_currency,</if>
+            <if test="quoteCurrency != null">quote_currency,</if>
+            <if test="buyNumber != null">buy_number,</if>
+            <if test="buyAmount != null">buy_amount,</if>
+            <if test="buyPrice != null">buy_price,</if>
+            <if test="probability != null">probability,</if>
+            <if test="successNumber != null">success_number,</if>
+            <if test="status != null">status,</if>
+            <if test="releaseTime != null">release_time,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">#{uid},</if>
+            <if test="buyCurrency != null">#{buyCurrency},</if>
+            <if test="quoteCurrency != null">#{quoteCurrency},</if>
+            <if test="buyNumber != null">#{buyNumber},</if>
+            <if test="buyAmount != null">#{buyAmount},</if>
+            <if test="buyPrice != null">#{buyPrice},</if>
+            <if test="probability != null">#{probability},</if>
+            <if test="successNumber != null">#{successNumber},</if>
+            <if test="status != null">#{status},</if>
+            <if test="releaseTime != null">#{releaseTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateIcoBuyRecord" parameterType="IcoBuyRecord">
+        update bg_ico_buy_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="buyCurrency != null">buy_currency = #{buyCurrency},</if>
+            <if test="quoteCurrency != null">quote_currency = #{quoteCurrency},</if>
+            <if test="buyNumber != null">buy_number = #{buyNumber},</if>
+            <if test="buyAmount != null">buy_amount = #{buyAmount},</if>
+            <if test="buyPrice != null">buy_price = #{buyPrice},</if>
+            <if test="probability != null">probability = #{probability},</if>
+            <if test="successNumber != null">success_number = #{successNumber},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="releaseTime != null">release_time = #{releaseTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteIcoBuyRecordById" parameterType="Long">
+        delete from bg_ico_buy_record where id = #{id}
+    </delete>
+
+    <delete id="deleteIcoBuyRecordByIds" parameterType="String">
+        delete from bg_ico_buy_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

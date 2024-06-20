@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.ContractPlanMapper">
+
+	<resultMap type="ContractPlan" id="ContractPlanResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="title"  		property="title"  />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="money"           property="money"          />
+		<result column="status"     		property="status"     />
+		<result column="trigger_price"       property="triggerPrice"       />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="trust_price"      		property="trustPrice"     />
+		<result column="final_price"    	property="finalPrice"   />
+		<result column="stop_loss"   			property="stopLoss"  />
+		<result column="stop_surplus"      property="stopSurplus"       />
+		<result column="trust_time"    property="trustTime"       />
+		<result column="revoke_time"       property="revokeTime"       />
+		<result column="contract_multiple"     property="contractMultiple"       />
+		<result column="deal_time"     property="dealTime"  />
+	</resultMap>
+
+	<resultMap type="ContractPlanVO" id="ContractPlanVOResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="title"  		property="title"  />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="money"           property="money"          />
+		<result column="status"     		property="status"     />
+		<result column="trigger_price"       property="triggerPrice"       />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="trust_price"      		property="trustPrice"     />
+		<result column="final_price"    	property="finalPrice"   />
+		<result column="stop_loss"   			property="stopLoss"  />
+		<result column="stop_surplus"      property="stopSurplus"       />
+		<result column="trust_time"    property="trustTime"       />
+		<result column="revoke_time"       property="revokeTime"       />
+		<result column="contract_multiple"     property="contractMultiple"       />
+		<result column="deal_time"     property="dealTime"  />
+	</resultMap>
+	
+	<insert id="insertContractPlan" parameterType="ContractPlan" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_contract_plan(
+			order_no, uid, title, symbol, currency, money, contract_multiple, `status`, trade_type,
+ 		    trigger_price, trust_price,stop_loss, stop_surplus, trust_time
+		)values(
+		   #{orderNo}, #{uid}, #{title}, #{symbol}, #{currency}, #{money}, #{contractMultiple}, #{status}, #{tradeType},
+		    #{triggerPrice}, #{trustPrice}, #{stopLoss} ,#{stopSurplus}, now()
+	   )
+	</insert>
+
+	<select id="listContractPlan" parameterType="ContractQueryParam" resultMap="ContractPlanVOResult">
+		select * from bg_contract_plan
+		where 1=1
+		<if test="uid != null">and uid = #{uid} </if>
+		<if test="status != null">and `status` = #{status} </if>
+		<if test="symbol != null and symbol != ''">and symbol = #{symbol} </if>
+		order by deal_time desc, trust_time desc
+	</select>
+
+	<select id="getByUidAndPlanId" parameterType="ContractQueryParam" resultMap="ContractPlanResult">
+		select * from bg_contract_plan
+		where uid=#{uid} and id = #{planId}
+	</select>
+
+	<update id="revokeContractPlan" parameterType="Long">
+		update bg_contract_plan set `status` = 2, revoke_time = now() where id = #{planId} and `status`=0
+	</update>
+
+	<update id="updatePlanStatusForDeal" parameterType="List">
+		update bg_contract_plan set `status` = #{status} where id in (
+		<foreach item="item" index="index" collection="list" separator=",">
+			#{item}
+		</foreach>)
+	</update>
+
+	<update id="updatePlan" parameterType="ContractPlan">
+		update bg_contract_plan
+		set
+		<if test="finalPrice != null and finalPrice != ''">final_price = #{finalPrice},</if>
+		<if test="dealTime != null">deal_time = #{dealTime},</if>
+		`status` = #{status}
+		where id = #{id}
+	</update>
+
+	<select id="getPlaningContract" resultMap="ContractPlanResult">
+		select * from bg_contract_plan where status = 0
+	</select>
+	
+</mapper> 

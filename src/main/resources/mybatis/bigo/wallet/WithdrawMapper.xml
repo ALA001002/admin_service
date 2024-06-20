@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.WithdrawMapper">
+
+	<resultMap type="Withdraw" id="WithdrawResult">
+		<id     property="id"           column="id" />
+		<result property="uid"       	column="uid" />
+		<result property="coin"     column="coin" />
+		<result property="money"      column="money" />
+		<result property="fee"  		column="fee"  />
+		<result property="from"  		column="from"  />
+		<result property="hash"  		column="hash"  />
+		<result property="toAddress"     column="to_address" />
+		<result property="remark"  		column="remark"  />
+		<result property="status"      column="status" />
+		<result property="checkStatus"      column="check_status" />
+		<result property="type"  column="type"  />
+		<result property="createTime"  		column="create_time"  />
+		<result property="operatorId"  		column="operator_id"  />
+		<result property="verifyTime"  		column="verify_time"  />
+		<result property="transactionId"  		column="transaction_id"  />
+		<result property="error"  		column="error"  />
+		<result property="photo"  		column="photo"  />
+	</resultMap>
+	
+	<insert id="insert" parameterType="Withdraw" useGeneratedKeys="true" keyProperty="id">
+		insert into t_withdraw(uid, coin, money, fee,verify_time, `status`, check_status, `type`, `from`, `hash`,`photo`, `to_address`, remark, transaction_id, create_time, ip_address, `position`,error)
+		values(#{uid}, #{coin}, #{money}, #{fee},#{verifyTime}, #{status}, #{checkStatus}, #{type}, #{from}, #{hash}, #{photo}, #{toAddress}, #{remark}, #{transactionId}, now(), #{ipAddress}, #{position}, #{error})
+	</insert>
+
+	<select id="listWithdraw" parameterType="Withdraw" resultType="Withdraw">
+		select
+			id,
+		    uid,
+			coin,
+			money,
+			fee,
+		    `status`,
+		    check_status as checkStatus,
+		   	remark,
+		    `from`,
+			`to_address` as toAddress,
+			`type` as type,
+			create_time as createTime,
+			`operator_id` as operatorId,
+			verify_time as verifyTime,
+			transaction_id as transactionId,
+			error
+		from t_withdraw
+		where 1=1
+		<if test="uid != null">and uid = #{uid}</if>
+		<if test="status != null">and `status` = #{status}</if>
+		<if test="coin != null and coin != ''">and coin = #{coin}</if>
+		<if test="checkStatus != null">and check_status = #{checkStatus}</if>
+		<if test="type != null">and type = #{type}</if>
+		order by create_time desc
+	</select>
+
+	<update id="update" parameterType="Withdraw">
+		update t_withdraw
+			<set>
+				<if test="status != null">`status` = #{status},</if>
+				<if test="checkStatus != null">check_status = #{checkStatus},</if>
+				<if test="operatorId != null">operator_id = #{operatorId},</if>
+				<if test="verifyTime != null">verify_time = #{verifyTime},</if>
+				<if test="error != null">error = #{error},</if>
+		    	<if test="type != null">`type` = #{type}</if>
+				<if test="transactionId != null">transaction_id = #{transactionId},</if>
+			</set>
+		where id = #{id}
+	</update>
+
+	<select id="getDayWithdrawQuantity" parameterType="Map" resultType="BigDecimal">
+		select IFNULL(sum(money),0) from t_withdraw
+		where uid = #{uid} and type = (#{type}) and status != 2
+	    and create_time &gt;= #{beginTime}
+	    and create_time &lt;= #{endTime}
+	</select>
+
+	<select id="isExistWithdraw" parameterType="Withdraw" resultType="Integer">
+		select count(1) from t_withdraw
+		where uid = #{uid} and type =2 and status = 0
+	    and create_time &gt;= #{beginTime}
+	    and create_time &lt;= #{endTime}
+	</select>
+
+	<select id="getByParam" parameterType="Withdraw" resultType="Withdraw">
+		select
+			id,
+			uid,
+			coin,
+			money,
+			fee,
+			`status`,
+			check_status as checkStatus,
+			remark,
+			`from`,
+			`to_address` as toAddress,
+			`type` as type,
+			create_time as createTime,
+			`operator_id` as operatorId,
+			verify_time as verifyTime,
+			transaction_id as transactionId,
+		error
+		from t_withdraw
+		<where>
+			<if test="id != null">and id = #{id}</if>
+			<if test="transactionId != null">and transaction_id = #{transactionId}</if>
+		</where>
+
+	</select>
+
+	<select id="listByEntity" parameterType="WithdrawEntity" resultType="WithdrawEntity">
+		select
+			tw.id,
+			tw.uid,
+			tw.coin,
+			tw.money,
+			tw.fee,
+			tw.`status`,
+			tw.check_status as checkStatus,
+			tw.remark,
+			tw.`from`,
+			tw.`to_address` as toAddress,
+			tw.`type` as type,
+			tw.create_time as createTime,
+			tw.`operator_id` as operatorId,
+			tw.verify_time as verifyTime,
+			tw.transaction_id as transactionId,
+			tw.error as error,
+		    tw.photo,
+			IFNULL(u.phone, u.email) as username,
+		    su.user_name as operatorName
+		from t_withdraw tw
+		left join bg_user u on u.uid = tw.uid
+		left join sys_user su on tw.operator_id = su.user_id
+		<where>
+			<if test="uids != null and uids != ''">and tw.uid in (${uids})</if>
+			<if test="status != null">and tw.`status` = #{status}</if>
+			<if test="checkStatus != null">and tw.check_status = #{checkStatus}</if>
+			<if test="coin != null and coin != ''">and tw.coin = #{coin}</if>
+			<if test="type != null">and tw.type = #{type}</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="types != null and types.size()>0">
+				and tw.type in
+				<foreach item="item" index="index" collection="types" open="("  close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			order by tw.create_time desc
+		</where>
+	</select>
+
+	<select id="withdrawListByEntity" parameterType="WithdrawEntity" resultType="WithdrawEntity">
+		select
+		tw.id,
+		tw.uid,
+		tw.coin,
+		tw.money,
+		tw.fee,
+		tw.`status`,
+		tw.check_status as checkStatus,
+		tw.remark,
+		tw.`from`,
+		tw.`to_address` as toAddress,
+		tw.`type` as type,
+		tw.create_time as createTime,
+		tw.`operator_id` as operatorId,
+		tw.verify_time as verifyTime,
+		tw.transaction_id as transactionId,
+		tw.error as error,
+		tw.photo,
+		IFNULL(u.phone, u.email) as username,
+		u.status as accountStatus,
+		u.last_login_ip as lastLoginIp,
+		u.last_login_area as lastLoginArea,
+		bag.agent_name as agentName,
+		su.user_name as operatorName
+		from t_withdraw tw
+		left join bg_user u on u.uid = tw.uid
+		left join sys_user su on tw.operator_id = su.user_id
+		left join bg_agent bag on bag.agent_code = u.top_uid
+		<where>
+			<if test="uids != null and uids != ''">and tw.uid in (${uids})</if>
+			<if test="status != null">and tw.`status` = #{status}</if>
+			<if test="checkStatus != null">and tw.check_status = #{checkStatus}</if>
+			<if test="coin != null and coin != ''">and tw.coin = #{coin}</if>
+			<if test="type != null">and tw.type = #{type}</if>
+			<if test="type == null">and (tw.type = 2 or tw.type = 3)</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+
+			<if test="agentId != null and agentId != ''">
+				and u.top_uid = #{agentId}
+			</if>
+			<if test="toAddress != null">
+				tw.to_address like concat('%',#{toAddress},'%')
+			</if>
+			order by tw.create_time desc
+		</where>
+	</select>
+
+	<select id="getWithdraAmount" parameterType="WithdrawEntity" resultType="java.math.BigDecimal">
+		select IFNULL(sum(tw.money),0) from t_withdraw tw
+		WHERE
+		1=1
+		<if test="type == 2">
+			AND (tw.type = 2 or tw.type = 3)
+		</if>
+		<if test="type == 4">
+			AND (tw.type = 4 or tw.type = 5)
+		</if>
+		<if test="checkStatus != null">
+			AND tw.check_status = #{checkStatus}
+		</if>
+		<if test="status != null">
+			AND tw.STATUS = #{status}
+		</if>
+		AND tw.uid = #{uid}
+		AND tw.coin = #{coin}
+	</select>
+
+	<select id="withdrawAuditRecord" parameterType="WithdrawEntity" resultType="java.math.BigDecimal">
+		select
+		IFNULL(SUM(tw.money),0)
+		from t_withdraw tw
+		left join bg_user u on u.uid = tw.uid
+		<where>
+			(type = 2 or type = 3)
+		    and u.status != 2
+			<if test="uids != null and uids != ''">and tw.uid in (${uids})</if>
+			<if test="status != null">and tw.`status` = #{status}</if>
+			<if test="checkStatus != null">and tw.check_status = #{checkStatus}</if>
+			<if test="coin != null and coin != ''">and if(tw.coin='USDT_TRC20','USDT',tw.coin) = #{coin}</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getTotalRecharge" parameterType="WithdrawEntity" resultType="java.math.BigDecimal">
+		select
+		IFNULL(SUM(tw.money),0)
+		from t_withdraw tw
+		left join bg_user u on u.uid = tw.uid
+		<where>
+			(type = 4 or type = 5)
+			and u.status != 2
+			<if test="status != null">and tw.`status` = #{status}</if>
+			<if test="checkStatus != null">and tw.check_status = #{checkStatus}</if>
+			<if test="coin != null and coin != ''">and if(tw.coin='USDT_TRC20','USDT',tw.coin) = #{coin}</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+		</where>
+	</select>
+
+	<select id="getTotalWithdraw" parameterType="WithdrawEntity" resultType="java.math.BigDecimal">
+		select
+		IFNULL(SUM(tw.money),0)
+		from t_withdraw tw
+		left join bg_user u on u.uid = tw.uid
+		<where>
+			(type = 2 or type = 3)
+			and u.status != 2
+			<if test="status != null">and tw.`status` = #{status}</if>
+			<if test="checkStatus != null">and tw.check_status = #{checkStatus}</if>
+			<if test="coin != null and coin != ''">and if(tw.coin='USDT_TRC20','USDT',tw.coin) = #{coin}</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(tw.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+		</where>
+	</select>
+
+	<select id="getWithdrawCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		select count(1) from t_withdraw where uid = #{uid} and (type = 2 or type = 3) and to_days(create_time) = to_days(now())
+	</select>
+
+	<select id="getManualPayment" parameterType="Withdraw" resultType="Withdraw">
+		select
+		id,
+		uid,
+		coin,
+		money,
+		fee,
+		`status`,
+		check_status as checkStatus,
+		remark,
+		`from`,
+		`to_address` as toAddress,
+		`type` as type,
+		create_time as createTime,
+		`operator_id` as operatorId,
+		verify_time as verifyTime,
+		transaction_id as transactionId,
+		error
+		from t_withdraw
+		where 1=1
+		<if test="uid != null">and uid = #{uid}</if>
+		<if test="status != null">and `status` = #{status}</if>
+		<if test="coin != null and coin != ''">and coin = #{coin}</if>
+		<if test="checkStatus != null">and check_status = #{checkStatus}</if>
+		<if test="type != null">and type = #{type}</if>
+		order by create_time desc limit 10
+	</select>
+
+	<select id="rechargeAndWithdrawAmount" parameterType="Withdraw" resultType="java.math.BigDecimal">
+		select IFNULL(sum(money),0) from t_withdraw where status = #{status}  and coin = #{coin}
+		<if test="type == 2">
+			and (type = 2 or type =3)
+		</if>
+		<if test="type == 4">
+			and (type = 4 or type =5)
+		</if>
+		and uid in
+		<foreach collection="uidList" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+	</select>
+</mapper> 

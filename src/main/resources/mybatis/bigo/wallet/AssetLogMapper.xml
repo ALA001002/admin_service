@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.AssetLogMapper">
+
+	<sql id="selectAssetLog">
+		log.id,
+		log.type,
+		log.sub_type as subType,
+		log.dim,
+		log.before,
+		log.amount,
+		log.after,
+		log.wallet_id as walletId,
+		log.contract_id as contractId,
+		log.operate_time as operateTime,
+		bw.currency as coin,
+		bw.uid
+	</sql>
+
+
+	<insert id="insertLog" parameterType="AssetLog" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_asset_log(
+			type, sub_type, dim, `before`, amount, `after`, wallet_id, contract_id, operate_time, release_time
+ 		) value (
+			#{type}, #{subType}, #{dim} ,#{before}, #{amount}, #{after}, #{walletId}, #{contractId}, now(), #{releaseTime}
+ 		)
+	</insert>
+
+	<insert id="saveLog" parameterType="AssetLog">
+		insert into bg_asset_log(
+			type, sub_type, dim, `before`, amount, `after`, wallet_id, contract_id, operate_time, release_time
+		) value (
+			#{type}, #{subType}, #{dim} ,#{before}, #{amount}, #{after}, #{walletId}, #{contractId}, now(), #{releaseTime}
+			)
+	</insert>
+
+	<insert id="batchInsert">
+		insert into bg_asset_log(type, sub_type, dim, `before`, amount, `after`, wallet_id, operate_time) values
+		<foreach item="log" index="index" collection="list" separator=",">
+			(#{log.type},#{log.subType},#{log.dim},#{log.before},#{log.amount},#{log.after},#{log.walletId},now())
+		</foreach>
+	</insert>
+
+
+	<select id="listByParam" parameterType="AssetLog" resultType="AssetLog">
+		select
+			<include refid="selectAssetLog"/>
+		from bg_asset_log log
+		left join bg_wallet bw on log.wallet_id = bw.id and bw.type = 0
+		where log.type != 9
+		<if test="coin != null">
+			and bw.currency = #{coin}
+		</if>
+		<if test="uid != null">
+			and bw.uid = #{uid}
+		</if>
+		<if test="type != null">
+			and log.type = #{type}
+		</if>
+		<if test="subType != null">
+			and log.sub_type = #{subType}
+		</if>
+
+		order by log.id desc
+	</select>
+
+	<select id="getTeamCommission" parameterType="AssetLogEntity" resultType="java.math.BigDecimal">
+		select
+		ifnull(sum(log.amount),0)
+		from bg_asset_log log
+		left join bg_wallet bw on log.wallet_id = bw.id and bw.type = 0
+		where log.type != 9
+		<if test="coin != null">
+			and bw.currency = #{coin}
+		</if>
+		<if test="type != null">
+			and log.type = #{type}
+		</if>
+		<if test="uidList != null">
+			and bw.uid in
+			<foreach collection="uidList" item="uid" open="(" separator="," close=")">
+				#{uid}
+			</foreach>
+		</if>
+
+	</select>
+
+	<select id="listByEntity" parameterType="AssetLogEntity" resultType="AssetLogEntity">
+		select
+			log.id,
+			log.type,
+			log.sub_type as subType,
+			log.dim,
+			log.before,
+			log.amount,
+			log.after,
+			log.wallet_id as walletId,
+			log.contract_id as contractId,
+			log.operate_time as operateTime,
+			log.release_time as releaseTime,
+			bw.currency as coin,
+			bw.uid,
+		    IFNULL(u.phone, u.email) as username,
+			u.status as userStatus,
+			u.last_login_ip as lastLoginIp,
+			u.last_login_area as lastLoginArea
+		from bg_asset_log log
+		left join bg_wallet bw on log.wallet_id = bw.id and bw.type = 0
+		left join bg_user u on bw.uid = u.uid
+		<where>
+			<if test="coin != null and coin != ''">
+				and bw.currency = #{coin}
+			</if>
+			<if test="uid != null">
+				and bw.uid = #{uid}
+			</if>
+			<if test="uids != null">
+				and u.uid in (${uids})
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+			<if test="type != null">
+				and log.type = #{type}
+			</if>
+			<if test="subType != null">
+				and log.sub_type = #{subType}
+			</if>
+			<if test="dim != null and dim != ''">
+				and log.dim = #{dim}
+			</if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(log.operate_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(log.operate_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by log.id desc
+	</select>
+
+	<select id="getExchangeNum" resultType="Long" parameterType="map">
+		select count(1) from
+		(SELECT
+			u.uid
+		FROM
+			bg_asset_log log
+		LEFT JOIN bg_wallet bw ON log.wallet_id = bw.id
+		AND bw.type = 0
+		LEFT JOIN bg_user u ON bw.uid = u.uid
+		WHERE 1=1
+		<if test="uid != null">and u.parent_uid = #{uid}</if>
+		<if test="beginTime != null">and log.operate_time &gt;= #{beginTime}</if>
+		<if test="endTime != null">and log.operate_time &lt;= #{endTime}</if>
+		<if test="coin != null">and bw.currency = #{coin}</if>
+		GROUP BY u.uid) tt
+	</select>
+
+	<select id="getExchangeCount" resultType="java.math.BigDecimal" parameterType="map">
+		SELECT
+		sum(log.amount)
+		FROM
+		bg_asset_log log
+		LEFT JOIN bg_wallet bw ON log.wallet_id = bw.id
+		AND bw.type = 0
+		LEFT JOIN bg_user u ON bw.uid = u.uid
+		WHERE 1=1
+		<if test="uid != null">and u.parent_uid = #{uid}</if>
+		<if test="beginTime != null">and log.operate_time &gt;= #{beginTime}</if>
+		<if test="endTime != null">and log.operate_time &lt;= #{endTime}</if>
+		<if test="coin != null">and bw.currency = #{coin}</if>
+		<if test="type != null">
+			and log.type = #{type}
+		</if>
+		<if test="subType != null">
+			and log.sub_type = #{subType}
+		</if>
+	</select>
+
+	<select id="libraFrozenList" parameterType="AssetLogEntity" resultType="AssetLogEntity">
+		select
+		log.id,
+		log.type,
+		log.sub_type as subType,
+		log.dim,
+		log.before,
+		log.amount,
+		log.after,
+		log.wallet_id as walletId,
+		log.contract_id as contractId,
+		log.operate_time as operateTime,
+		log.release_time as releaseTime,
+		bw.currency as coin,
+		bw.uid,
+		IFNULL(u.phone, u.email) as username,
+		u.status as userStatus
+		from bg_asset_log log
+		left join bg_wallet bw on log.wallet_id = bw.id and bw.type = 0
+		left join bg_user u on bw.uid = u.uid
+		where log.is_release = #{isRelease} and log.sub_type = #{subType} and log.release_time &lt;= now() LIMIT 50
+	</select>
+
+	<update id="updateReleaseStatus" parameterType="AssetLogEntity">
+		update bg_asset_log set is_release = 1 where id = #{id}
+	</update>
+
+
+</mapper> 

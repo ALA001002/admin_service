@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.chat.mapper.DockInfoMapper">
+
+	<resultMap type="DockInfo" id="DockInfoResult">
+		<id     property="id"       	column="id"      />
+		<result property="uid"       	column="uid"  />
+		<result property="customerServiceId"     	column="customer_service_id"  />
+		<result property="updateTime"     column="update_time"     />
+	</resultMap>
+	
+	<insert id="insert" parameterType="DockInfo" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_dock_info(uid,customer_service_id,update_time)
+ 		values (#{uid},#{customerServiceId},now())
+	</insert>
+
+	<update id="update" parameterType="DockInfo">
+		update bg_dock_info set `customer_service_id` = #{customerServiceId} where uid = #{uid}
+	</update>
+
+	<select id="getCustomerServiceIdByUid" parameterType="Long" resultType="Long">
+		select customer_service_id from bg_dock_info where uid = #{uid}
+	</select>
+
+	<select id="listDockInfo" parameterType="String" resultType="DockInfo">
+		select
+			su.user_id as customerServiceId,
+			count(di.uid) as userNum
+		from sys_user su
+	 	left join bg_dock_info di on su.user_id = di.customer_service_id
+		where su.user_id in (${csIds})
+		group by su.user_id
+	</select>
+	
+</mapper> 

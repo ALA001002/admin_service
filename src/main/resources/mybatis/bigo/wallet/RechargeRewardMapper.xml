@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.RechargeRewardMapper">
+    
+    <resultMap type="RechargeReward" id="RechargeRewardResult">
+        <result property="id"    column="id"    />
+        <result property="rechargeAmount"    column="recharge_amount"    />
+        <result property="userRewardNum"    column="user_reward_num"    />
+        <result property="parentRewardNum"    column="parent_reward_num"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectRechargeRewardVo">
+        select id, recharge_amount, user_reward_num, parent_reward_num, create_time from bg_recharge_reward
+    </sql>
+
+    <select id="selectRechargeRewardList" parameterType="RechargeReward" resultMap="RechargeRewardResult">
+        <include refid="selectRechargeRewardVo"/>
+        <where>  
+            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
+            <if test="userRewardNum != null "> and user_reward_num = #{userRewardNum}</if>
+            <if test="parentRewardNum != null "> and parent_reward_num = #{parentRewardNum}</if>
+        </where>
+        order by recharge_amount asc
+    </select>
+    
+    <select id="selectRechargeRewardById" parameterType="Long" resultMap="RechargeRewardResult">
+        <include refid="selectRechargeRewardVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertRechargeReward" parameterType="RechargeReward" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_recharge_reward
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rechargeAmount != null">recharge_amount,</if>
+            <if test="userRewardNum != null">user_reward_num,</if>
+            <if test="parentRewardNum != null">parent_reward_num,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rechargeAmount != null">#{rechargeAmount},</if>
+            <if test="userRewardNum != null">#{userRewardNum},</if>
+            <if test="parentRewardNum != null">#{parentRewardNum},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRechargeReward" parameterType="RechargeReward">
+        update bg_recharge_reward
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
+            <if test="userRewardNum != null">user_reward_num = #{userRewardNum},</if>
+            <if test="parentRewardNum != null">parent_reward_num = #{parentRewardNum},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRechargeRewardById" parameterType="Long">
+        delete from bg_recharge_reward where id = #{id}
+    </delete>
+
+    <delete id="deleteRechargeRewardByIds" parameterType="String">
+        delete from bg_recharge_reward where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

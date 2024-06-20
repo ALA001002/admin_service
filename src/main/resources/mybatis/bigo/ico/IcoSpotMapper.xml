@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.ico.mapper.IcoSpotMapper">
+    
+    <resultMap type="IcoSpot" id="IcoSpotResult">
+        <result property="id"    column="id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="uid"    column="uid"    />
+        <result property="symbol"    column="symbol"    />
+        <result property="status"    column="status"    />
+        <result property="baseCoin"    column="base_coin"    />
+        <result property="quoteCoin"    column="quote_coin"    />
+        <result property="orderType"    column="order_type"    />
+        <result property="side"    column="side"    />
+        <result property="origQty"    column="orig_qty"    />
+        <result property="executedQty"    column="executed_qty"    />
+        <result property="executedPrice"    column="executed_price"    />
+        <result property="price"    column="price"    />
+        <result property="fee"    column="fee"    />
+        <result property="executedQuoteQty"    column="executed_quote_qty"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="workingTime"    column="working_time"    />
+        <result property="username"    column="email"    />
+    </resultMap>
+
+    <sql id="selectIcoSpotVo">
+        SELECT
+            bis.id,
+            bis.order_id,
+            bis.uid,
+            bis.symbol,
+            bis.STATUS,
+            bis.base_coin,
+            bis.quote_coin,
+            bis.order_type,
+            bis.side,
+            bis.orig_qty,
+            bis.executed_qty,
+            bis.executed_price,
+            bis.price,
+            bis.fee,
+            bis.executed_quote_qty,
+            bis.create_time,
+            bis.update_time,
+            bis.working_time,
+            bu.email
+        FROM
+            bg_ico_spot bis LEFT JOIN bg_user bu on bis.uid = bu.uid
+    </sql>
+
+    <select id="selectIcoSpotList" parameterType="IcoSpot" resultMap="IcoSpotResult">
+        <include refid="selectIcoSpotVo"/>
+        <where>  
+            <if test="orderId != null  and orderId != ''"> and bis.order_id = #{orderId}</if>
+            <if test="uid != null "> and bis.uid = #{uid}</if>
+            <if test="symbol != null  and symbol != ''"> and bis.symbol = #{symbol}</if>
+            <if test="status != null  and status != ''"> and bis.status = #{status}</if>
+            <if test="orderType != null  and orderType != ''"> and bis.order_type = #{orderType}</if>
+            <if test="side != null  and side != ''"> and bis.side = #{side}</if>
+            <if test="workingTime != null "> and bis.working_time = #{workingTime}</if>
+            <if test="username != null "> and bu.email = #{username}</if>
+        </where>
+        order by bis.create_time desc
+    </select>
+
+    <select id="selectIcoSpotVOList" parameterType="IcoSpotVO" resultType="IcoSpotVO">
+        SELECT
+        id,
+        order_id as orderId,
+        uid,
+        symbol,
+        STATUS,
+        base_coin as baseCoin,
+        quote_coin as quoteCoin,
+        order_type as orderType,
+        side,
+        orig_qty as origQty,
+        executed_qty as executedQty,
+        executed_price as executedPrice,
+        price,
+        fee,
+        executed_quote_qty as executedQuoteQty,
+        create_time as createTime,
+        update_time as updateTime,
+        working_time as workingTime
+        FROM
+        bg_ico_spot
+        <where>
+            <if test="orderId != null  and orderId != ''"> and order_id = #{orderId}</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="symbol != null  and symbol != ''"> and symbol = #{symbol}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="orderType != null  and orderType != ''"> and order_type = #{orderType}</if>
+            <if test="side != null  and side != ''"> and side = #{side}</if>
+            <if test="startTime != null "> and create_time &gt;= #{startTime}</if>
+            <if test="endTime != null "> and create_time &lt;= #{endTime}</if>
+            <if test="statusList !=null and statusList.size() > 0">
+            and status in
+                <foreach collection="statusList" item="st" index="index" open="(" close=")" separator=",">
+                    #{st}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectIcoSpotById" parameterType="Long" resultMap="IcoSpotResult">
+        <include refid="selectIcoSpotVo"/>
+        where bis.id = #{id}
+    </select>
+
+    <select id="selectIcoSpot" parameterType="IcoSpot" resultMap="IcoSpotResult">
+        <include refid="selectIcoSpotVo"/>
+        <where>
+            <if test="orderId != null  and orderId != ''"> and bis.order_id = #{orderId}</if>
+            <if test="uid != null "> and bis.uid = #{uid}</if>
+            <if test="symbol != null  and symbol != ''"> and bis.symbol = #{symbol}</if>
+            <if test="status != null  and status != ''"> and bis.status = #{status}</if>
+            <if test="orderType != null  and orderType != ''"> and bis.order_type = #{orderType}</if>
+            <if test="workingTime != null "> and bis.working_time = #{workingTime}</if>
+        </where>
+    </select>
+
+        
+    <insert id="insertIcoSpot" parameterType="IcoSpot" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_ico_spot
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="uid != null">uid,</if>
+            <if test="symbol != null">symbol,</if>
+            <if test="status != null">status,</if>
+            <if test="baseCoin != null">base_coin,</if>
+            <if test="quoteCoin != null">quote_coin,</if>
+            <if test="orderType != null">order_type,</if>
+            <if test="side != null">side,</if>
+            <if test="origQty != null">orig_qty,</if>
+            <if test="executedQty != null">executed_qty,</if>
+            <if test="executedPrice != null">executed_price,</if>
+            <if test="price != null">price,</if>
+            <if test="fee != null">fee,</if>
+            <if test="executedQuoteQty != null">executed_quote_qty,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="workingTime != null">working_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="symbol != null">#{symbol},</if>
+            <if test="status != null">#{status},</if>
+            <if test="baseCoin != null">#{baseCoin},</if>
+            <if test="quoteCoin != null">#{quoteCoin},</if>
+            <if test="orderType != null">#{orderType},</if>
+            <if test="side != null">#{side},</if>
+            <if test="origQty != null">#{origQty},</if>
+            <if test="executedQty != null">#{executedQty},</if>
+            <if test="executedPrice != null">#{executedPrice},</if>
+            <if test="price != null">#{price},</if>
+            <if test="fee != null">#{fee},</if>
+            <if test="executedQuoteQty != null">#{executedQuoteQty},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="workingTime != null">#{workingTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateIcoSpot" parameterType="IcoSpot">
+        update bg_ico_spot
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="symbol != null">symbol = #{symbol},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="baseCoin != null">base_coin = #{baseCoin},</if>
+            <if test="quoteCoin != null">quote_coin = #{quoteCoin},</if>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="side != null">side = #{side},</if>
+            <if test="origQty != null">orig_qty = #{origQty},</if>
+            <if test="executedQty != null">executed_qty = #{executedQty},</if>
+            <if test="executedPrice != null">executed_price = #{executedPrice},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="fee != null">fee = #{fee},</if>
+            <if test="executedQuoteQty != null">executed_quote_qty = #{executedQuoteQty},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="workingTime != null">working_time = #{workingTime},</if>
+        </trim>
+        where id = #{id}
+        <if test="oldStatus != null">
+            and status = #{oldStatus}
+        </if>
+    </update>
+
+    <update id="revokeOrder" parameterType="IcoSpot">
+        update bg_ico_spot
+        set status = #{status}
+        where id = #{id} and status = #{oldStatus}
+    </update>
+
+    <delete id="deleteIcoSpotById" parameterType="Long">
+        delete from bg_ico_spot where id = #{id}
+    </delete>
+
+    <delete id="deleteIcoSpotByIds" parameterType="String">
+        delete from bg_ico_spot where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="sumTradeUserNum" parameterType="java.util.Map" resultType="java.lang.Long">
+        select count(1)  from (
+            SELECT
+            bis.uid
+            FROM
+            bg_ico_spot bis
+            LEFT JOIN bg_user bu ON bis.uid = bu.uid
+            WHERE 1=1
+            <if test="agentId != null"> and bu.top_uid = #{agentId}</if>
+            <if test="startTime != null"> and bis.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null">and bis.create_time &lt;= #{endTime}</if>
+            GROUP BY bis.uid
+        )t
+    </select>
+
+    <select id="selectTradeUser" resultType="IcoSpot">
+        SELECT
+            uid
+        FROM
+            bg_ico_spot
+        WHERE
+            DATE(create_time) = '2024-02-11'
+        and uid not in(470778,916128,835153,344503,972409,617951,606278,359326)
+        GROUP BY uid
+    </select>
+
+    <select id="getTradeAmount" parameterType="IcoSpot" resultType="java.math.BigDecimal">
+        SELECT
+            IFNULL(SUM(executed_quote_qty),0)
+        FROM
+            bg_ico_spot
+        WHERE
+            DATE(create_time) = '2024-02-11'
+          and side = #{side}
+        and uid = #{uid}
+    </select>
+</mapper>

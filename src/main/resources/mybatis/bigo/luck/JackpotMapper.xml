@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.luck.mapper.JackpotMapper">
+    
+    <resultMap type="Jackpot" id="JackpotResult">
+        <result property="id"    column="id"    />
+        <result property="coin"    column="coin"    />
+        <result property="num"    column="num"    />
+        <result property="probability"    column="probability"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+    </resultMap>
+
+    <sql id="selectJackpotVo">
+        select id, coin, num, probability, create_time, create_by from bg_jackpot
+    </sql>
+
+    <select id="selectJackpotList" parameterType="Jackpot" resultMap="JackpotResult">
+        <include refid="selectJackpotVo"/>
+        <where>  
+            <if test="coin != null  and coin != ''"> and coin = #{coin}</if>
+            <if test="num != null "> and num = #{num}</if>
+            <if test="probability != null "> and probability = #{probability}</if>
+        </where>
+    </select>
+    
+    <select id="selectJackpotById" parameterType="Long" resultMap="JackpotResult">
+        <include refid="selectJackpotVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertJackpot" parameterType="Jackpot" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_jackpot
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="coin != null and coin != ''">coin,</if>
+            <if test="num != null">num,</if>
+            <if test="probability != null">probability,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="coin != null and coin != ''">#{coin},</if>
+            <if test="num != null">#{num},</if>
+            <if test="probability != null">#{probability},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateJackpot" parameterType="Jackpot">
+        update bg_jackpot
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="coin != null and coin != ''">coin = #{coin},</if>
+            <if test="num != null">num = #{num},</if>
+            <if test="probability != null">probability = #{probability},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteJackpotById" parameterType="Long">
+        delete from bg_jackpot where id = #{id}
+    </delete>
+
+    <delete id="deleteJackpotByIds" parameterType="String">
+        delete from bg_jackpot where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.pay.mapper.TransOrderMapper">
+    
+    <resultMap type="TransOrder" id="TransOrderResult">
+        <result property="id"    column="id"    />
+        <result property="transOrderId"    column="trans_order_id"    />
+        <result property="channelOrderId"    column="channel_order_id"    />
+        <result property="uid"    column="uid"    />
+        <result property="amount"    column="amount"    />
+        <result property="fee"    column="fee"    />
+        <result property="currencyAmount"    column="currency_amount"    />
+        <result property="status"    column="status"    />
+        <result property="payPassageId"    column="pay_passage_id"    />
+        <result property="withdrawId"    column="withdraw_id"    />
+        <result property="currency"    column="currency"    />
+        <result property="bankCode"    column="bank_code"    />
+        <result property="accountName"    column="account_name"    />
+        <result property="accountNo"    column="account_no"    />
+        <result property="bankName"    column="bank_name"    />
+        <result property="bankNumber"    column="bank_number"    />
+        <result property="receiverPhone"    column="receiver_phone"    />
+        <result property="extra"    column="extra"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="transSuccTime"    column="trans_succ_time"    />
+        <result property="notifyUrl"    column="notify_url"    />
+        <result property="username"    column="username"    />
+    </resultMap>
+
+    <sql id="selectTransOrderVo">
+        select id, trans_order_id, channel_order_id, uid, amount, fee, currency_amount, status, pay_passage_id, withdraw_id, currency, bank_code, account_name, bank_number, account_no, bank_name, receiver_phone, extra, create_time, trans_succ_time, notify_url from bg_trans_order
+    </sql>
+
+    <select id="selectTransOrderList" parameterType="TransOrder" resultMap="TransOrderResult">
+        SELECT
+            a.id,
+            a.trans_order_id,
+            a.channel_order_id,
+            a.uid,
+            a.amount,
+            a.fee,
+            a.currency_amount,
+            a.STATUS,
+            a.pay_passage_id,
+            a.withdraw_id,
+            a.currency,
+            a.bank_code,
+            a.account_name,
+            a.account_no,
+            a.bank_name,
+            a.bank_number,
+            a.receiver_phone,
+            a.extra,
+            a.create_time,
+            a.trans_succ_time,
+            a.notify_url,
+            IFNULL(b.phone,b.email) as username
+        FROM
+            bg_trans_order a
+        LEFT JOIN bg_user b on a.uid = b.uid
+        <where>  
+            <if test="transOrderId != null  and transOrderId != ''"> and a.trans_order_id = #{transOrderId}</if>
+            <if test="channelOrderId != null  and channelOrderId != ''"> and a.channel_order_id = #{channelOrderId}</if>
+            <if test="uid != null "> and a.uid = #{uid}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+            <if test="payPassageId != null "> and a.pay_passage_id = #{payPassageId}</if>
+            <if test="withdrawId != null "> and a.withdraw_id = #{withdrawId}</if>
+            <if test="transSuccTime != null "> and a.trans_succ_time = #{transSuccTime}</if>
+            <if test="withdrawId != null "> and a.withdraw_id = #{withdrawId}</if>
+            <if test="username != null and username!=''">
+                and (b.phone like concat('%',#{username},'%') or b.email like concat('%',#{username},'%'))
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectTransOrderById" parameterType="Long" resultMap="TransOrderResult">
+        <include refid="selectTransOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectOrderId" parameterType="String" resultMap="TransOrderResult">
+        <include refid="selectTransOrderVo"/>
+        where trans_order_id = #{transOrderId}
+    </select>
+        
+    <insert id="insertTransOrder" parameterType="TransOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_trans_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="transOrderId != null">trans_order_id,</if>
+            <if test="channelOrderId != null">channel_order_id,</if>
+            <if test="uid != null">uid,</if>
+            <if test="amount != null">amount,</if>
+            <if test="fee != null">fee,</if>
+            <if test="currencyAmount != null">currency_amount,</if>
+            <if test="status != null">status,</if>
+            <if test="payPassageId != null">pay_passage_id,</if>
+            <if test="withdrawId != null">withdraw_id,</if>
+            <if test="currency != null">currency,</if>
+            <if test="bankCode != null">bank_code,</if>
+            <if test="accountName != null">account_name,</if>
+            <if test="accountNo != null">account_no,</if>
+            <if test="bankName != null">bank_name,</if>
+            <if test="bankNumber != null">bank_number,</if>
+            <if test="receiverPhone != null">receiver_phone,</if>
+            <if test="extra != null">extra,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="transSuccTime != null">trans_succ_time,</if>
+            <if test="notifyUrl != null">notify_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="transOrderId != null">#{transOrderId},</if>
+            <if test="channelOrderId != null">#{channelOrderId},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="fee != null">#{fee},</if>
+            <if test="currencyAmount != null">#{currencyAmount},</if>
+            <if test="status != null">#{status},</if>
+            <if test="payPassageId != null">#{payPassageId},</if>
+            <if test="withdrawId != null">#{withdrawId},</if>
+            <if test="currency != null">#{currency},</if>
+            <if test="bankCode != null">#{bankCode},</if>
+            <if test="accountName != null">#{accountName},</if>
+            <if test="accountNo != null">#{accountNo},</if>
+            <if test="bankName != null">#{bankName},</if>
+            <if test="bankNumber != null">#{bankNumber},</if>
+            <if test="receiverPhone != null">#{receiverPhone},</if>
+            <if test="extra != null">#{extra},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="transSuccTime != null">#{transSuccTime},</if>
+            <if test="notifyUrl != null">#{notifyUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransOrder" parameterType="TransOrder">
+        update bg_trans_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="transOrderId != null">trans_order_id = #{transOrderId},</if>
+            <if test="channelOrderId != null">channel_order_id = #{channelOrderId},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="fee != null">fee = #{fee},</if>
+            <if test="currencyAmount != null">currency_amount = #{currencyAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="payPassageId != null">pay_passage_id = #{payPassageId},</if>
+            <if test="withdrawId != null">withdraw_id = #{withdrawId},</if>
+            <if test="currency != null">currency = #{currency},</if>
+            <if test="bankCode != null">bank_code = #{bankCode},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountNo != null">account_no = #{accountNo},</if>
+            <if test="bankName != null">bank_name = #{bankName},</if>
+            <if test="receiverPhone != null">receiver_phone = #{receiverPhone},</if>
+            <if test="extra != null">extra = #{extra},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="transSuccTime != null">trans_succ_time = #{transSuccTime},</if>
+            <if test="notifyUrl != null">notify_url = #{notifyUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus" parameterType="TransOrder">
+        update bg_trans_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="channelOrderId != null">channel_order_id = #{channelOrderId},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="fee != null">fee = #{fee},</if>
+            <if test="currencyAmount != null">currency_amount = #{currencyAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="payPassageId != null">pay_passage_id = #{payPassageId},</if>
+            <if test="withdrawId != null">withdraw_id = #{withdrawId},</if>
+            <if test="currency != null">currency = #{currency},</if>
+            <if test="bankCode != null">bank_code = #{bankCode},</if>
+            <if test="accountName != null">account_name = #{accountName},</if>
+            <if test="accountNo != null">account_no = #{accountNo},</if>
+            <if test="bankName != null">bank_name = #{bankName},</if>
+            <if test="receiverPhone != null">receiver_phone = #{receiverPhone},</if>
+            <if test="extra != null">extra = #{extra},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="transSuccTime != null">trans_succ_time = #{transSuccTime},</if>
+            <if test="notifyUrl != null">notify_url = #{notifyUrl},</if>
+        </trim>
+        where trans_order_id = #{transOrderId}
+    </update>
+
+    <delete id="deleteTransOrderById" parameterType="Long">
+        delete from bg_trans_order where id = #{id}
+    </delete>
+
+    <delete id="deleteTransOrderByIds" parameterType="String">
+        delete from bg_trans_order where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

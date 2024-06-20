@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.product.mapper.ProductInfoMapper">
+    
+    <resultMap type="ProductInfo" id="ProductInfoResult">
+        <result property="id"    column="id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="typeId"    column="type_id"    />
+        <result property="profitRate"    column="profit_rate"    />
+        <result property="profitTime"    column="profit_time"    />
+        <result property="purchaseAmountMin"    column="purchase_amount_min"    />
+        <result property="currency"    column="currency"    />
+        <result property="totalNumber"    column="total_number"    />
+        <result property="remainingNumber"    column="remaining_number"    />
+        <result property="settlementType"    column="settlement_type"    />
+        <result property="purchaseAmountMax"    column="purchase_amount_max"    />
+        <result property="countdownTime"    column="countdown_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="isDel"    column="is_del"    />
+        <result property="isTop"    column="is_top"    />
+    </resultMap>
+
+    <sql id="selectProductInfoVo">
+        select id, product_name,type_id, profit_rate, profit_time, purchase_amount_min, currency,total_number,remaining_number,purchase_amount_max,
+               countdown_time,create_time, create_by, update_time, update_by, is_del, settlement_type, is_top from bg_product_info
+    </sql>
+
+    <select id="selectProductInfoList" parameterType="ProductInfo" resultMap="ProductInfoResult">
+        <include refid="selectProductInfoVo"/>
+        <where>
+            <if test="typeId != null">and type_id = #{typeId}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+             <if test="settlementType != null">and settlement_type = #{settlementType}</if>
+             <if test="countdownTime !=null">and countdown_time &gt; #{countdownTime}</if>
+            <if test="isTop != null">and is_top = #{isTop}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductInfoById" parameterType="Long" resultMap="ProductInfoResult">
+        <include refid="selectProductInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProductInfo" parameterType="ProductInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_product_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null">product_name,</if>
+            <if test="typeId != null">type_id,</if>
+            <if test="profitRate != null">profit_rate,</if>
+            <if test="profitTime != null">profit_time,</if>
+            <if test="purchaseAmountMin != null">purchase_amount_min,</if>
+            <if test="currency != null">currency,</if>
+            <if test="totalNumber != null">total_number,</if>
+            <if test="remainingNumber != null">remaining_number,</if>
+            <if test="purchaseAmountMax != null">purchase_amount_max,</if>
+            <if test="countdownTime != null">countdown_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="isDel != null">is_del,</if>
+            <if test="isTop != null">is_top,</if>
+            <if test="settlementType != null">settlement_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productName != null">#{productName},</if>
+            <if test="typeId != null">#{typeId},</if>
+            <if test="profitRate != null">#{profitRate},</if>
+            <if test="profitTime != null">#{profitTime},</if>
+            <if test="purchaseAmountMin != null">#{purchaseAmountMin},</if>
+            <if test="currency != null">#{currency},</if>
+            <if test="totalNumber != null">#{totalNumber},</if>
+            <if test="remainingNumber != null">#{remainingNumber},</if>
+            <if test="purchaseAmountMax != null">#{purchaseAmountMax},</if>
+            <if test="countdownTime != null">#{countdownTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="isDel != null">#{isDel},</if>
+            <if test="isTop != null">#{isTop},</if>
+            <if test="settlementType != null">#{settlementType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductInfo" parameterType="ProductInfo">
+        update bg_product_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="typeId != null">type_id = #{typeId},</if>
+            <if test="profitRate != null">profit_rate = #{profitRate},</if>
+            <if test="profitTime != null">profit_time = #{profitTime},</if>
+            <if test="purchaseAmountMin != null">purchase_amount_min = #{purchaseAmountMin},</if>
+            <if test="currency != null">currency = #{currency},</if>
+            <if test="totalNumber != null">total_number = #{totalNumber},</if>
+            <if test="remainingNumber != null">remaining_number = #{remainingNumber},</if>
+            <if test="purchaseAmountMax != null">purchase_amount_max = #{purchaseAmountMax},</if>
+            <if test="countdownTime != null">countdown_time = #{countdownTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="isDel != null">is_del = #{isDel},</if>
+            <if test="isTop != null">is_top = #{isTop},</if>
+            <if test="settlementType != null">settlement_type = #{settlementType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductInfoById" parameterType="Long">
+        delete from bg_product_info where id = #{id}
+    </delete>
+
+    <delete id="deleteProductInfoByIds" parameterType="String">
+        delete from bg_product_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="inStockForUpdate" parameterType="Long" resultType="ProductInfo">
+        select * from bg_product_info where id = #{id} for update
+    </select>
+
+    <update id="updateInStock" parameterType="ProductInfo">
+        update bg_product_info set remaining_number = remaining_number -1  where  id = #{id} and remaining_number > 0
+    </update>
+
+</mapper>

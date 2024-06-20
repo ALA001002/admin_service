@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.luck.mapper.LotteryCodeRecordMapper">
+    
+    <resultMap type="LotteryCodeRecord" id="LotteryCodeRecordResult">
+        <result property="id"    column="id"    />
+        <result property="lotteryCode"    column="lottery_code"    />
+        <result property="uid"    column="uid"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectLotteryCodeRecordVo">
+        select id, lottery_code, uid, create_time from bg_lottery_code_record
+    </sql>
+
+    <select id="selectLotteryCodeRecordList" parameterType="LotteryCodeRecord" resultType="LotteryCodeRecord">
+        SELECT
+            br.id,
+            br.lottery_code as lotteryCode,
+            br.uid,
+            create_time as createTime,
+            IFNULL(u.phone, u.email) as username
+        FROM
+            bg_lottery_code_record br left join bg_user u on br.uid = u.uid
+        <where>  
+            <if test="lotteryCode != null  and lotteryCode != ''"> and br.lottery_code = #{lotteryCode}</if>
+            <if test="uid != null "> and br.uid = #{uid}</if>
+            <if test="username != null and username != ''"> and (u.phone = #{username} or u.email = #{username})</if>
+            <if test="agentId != null"> and u.top_uid = #{agentId}</if>
+        </where>
+        order by br.create_time desc
+    </select>
+    
+    <select id="selectLotteryCodeRecordById" parameterType="Long" resultMap="LotteryCodeRecordResult">
+        <include refid="selectLotteryCodeRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLotteryCodeRecord" parameterType="LotteryCodeRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_lottery_code_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="lotteryCode != null">lottery_code,</if>
+            <if test="uid != null">uid,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="lotteryCode != null">#{lotteryCode},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLotteryCodeRecord" parameterType="LotteryCodeRecord">
+        update bg_lottery_code_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lotteryCode != null">lottery_code = #{lotteryCode},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLotteryCodeRecordById" parameterType="Long">
+        delete from bg_lottery_code_record where id = #{id}
+    </delete>
+
+    <delete id="deleteLotteryCodeRecordByIds" parameterType="String">
+        delete from bg_lottery_code_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

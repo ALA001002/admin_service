@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.holdings.mapper.HoldingsProductMapper">
+    
+    <resultMap type="HoldingsProduct" id="HoldingsProductResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="buyNumber"    column="buy_number"    />
+        <result property="symbolJson"    column="symbol_json"    />
+        <result property="timeJson"    column="time_json"    />
+        <result property="type"    column="type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectHoldingsProductVo">
+        select id, name, buy_number, symbol_json, time_json, type, create_time, update_time from bg_holdings_product
+    </sql>
+
+    <select id="selectHoldingsProductList" parameterType="HoldingsProduct" resultMap="HoldingsProductResult">
+        <include refid="selectHoldingsProductVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="buyNumber != null "> and buy_number = #{buyNumber}</if>
+            <if test="symbolJson != null  and symbolJson != ''"> and symbol_json = #{symbolJson}</if>
+            <if test="timeJson != null  and timeJson != ''"> and time_json = #{timeJson}</if>
+            <if test="type != null "> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectHoldingsProductById" parameterType="Long" resultMap="HoldingsProductResult">
+        <include refid="selectHoldingsProductVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertHoldingsProduct" parameterType="HoldingsProduct">
+        insert into bg_holdings_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="buyNumber != null">buy_number,</if>
+            <if test="symbolJson != null">symbol_json,</if>
+            <if test="timeJson != null">time_json,</if>
+            <if test="type != null">type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="buyNumber != null">#{buyNumber},</if>
+            <if test="symbolJson != null">#{symbolJson},</if>
+            <if test="timeJson != null">#{timeJson},</if>
+            <if test="type != null">#{type},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHoldingsProduct" parameterType="HoldingsProduct">
+        update bg_holdings_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="buyNumber != null">buy_number = #{buyNumber},</if>
+            <if test="symbolJson != null">symbol_json = #{symbolJson},</if>
+            <if test="timeJson != null">time_json = #{timeJson},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHoldingsProductById" parameterType="Long">
+        delete from bg_holdings_product where id = #{id}
+    </delete>
+
+    <delete id="deleteHoldingsProductByIds" parameterType="String">
+        delete from bg_holdings_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.marketsituation.mapper.KlineMapper">
+
+	<resultMap type="Kline" id="KlineResult">
+		<id     property="id"       	column="id"      />
+		<result property="period"       column="period"  />
+		<result property="symbol"     	column="symbol"  />
+		<result property="timestamp"    column="timestamp"     />
+		<result property="amount"  		column="amount"  />
+		<result property="count"        column="count"   />
+		<result property="open"       	column="open"    />
+		<result property="close"     	column="close"   />
+		<result property="low"       	column="low"     />
+		<result property="high"      	column="high"    />
+		<result property="vol"      	column="vol"     />
+		<result property="realOpen"       	column="real_open"    />
+		<result property="realClose"     	column="real_close"   />
+		<result property="realLow"       	column="real_low"     />
+		<result property="realHigh"      	column="real_high"    />
+	</resultMap>
+
+	<select id="listKlineByTimestamp" parameterType="KlineQuery" resultMap="KlineResult">
+		SELECT
+			*
+		FROM
+			bg_kline
+		WHERE
+			symbol = #{symbol} and period = #{period} <if test="timeOfIssue != null">and timestamp &gt; #{timeOfIssue} </if> and timestamp &lt; #{timestamp} order by timestamp desc limit #{size}
+	</select>
+
+	<select id="findKlineList" parameterType="Kline" resultType="Kline">
+		SELECT
+			*
+		FROM
+			bg_kline
+		<where>
+			<if test="symbol != null">and symbol = #{symbol}</if>
+			<if test="period != null">and period = #{period}</if>
+		</where>
+		order by timestamp desc
+		<if test="size != null">
+			limit #{size}
+		</if>
+	</select>
+
+	<select id="getKline" parameterType="Kline" resultType="Kline">
+		SELECT
+			*
+		FROM
+			bg_kline
+		WHERE
+			symbol = #{symbol} and period = #{period} and timestamp = #{timestamp}
+	</select>
+
+	<select id="listKlineForCache" parameterType="KlineQuery" resultMap="KlineResult">
+		select * from bg_kline where symbol = #{symbol} and period = #{period} order by timestamp DESC limit #{size}
+	</select>
+
+	<select id="getMaxTimestampBySymbolAndPeriod" parameterType="Kline" resultType="Long">
+		select MAX(timestamp) from bg_kline where symbol = #{symbol} and period = #{period}
+	</select>
+	
+	<insert id="insertKline" parameterType="Kline" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_kline(
+			period,
+			symbol,
+			timestamp,
+			amount,
+			count,
+			open,
+			close,
+			low,
+			high,
+			vol,
+			real_open,
+			real_close,
+			real_low,
+			real_high
+ 		)values(
+			#{period},
+			#{symbol},
+			#{timestamp},
+			#{amount},
+			#{count},
+			#{open},
+			#{close},
+			#{low},
+			#{high},
+			#{vol},
+			#{realOpen},
+			#{realClose},
+			#{realLow},
+			#{realHigh}
+ 		)
+	</insert>
+
+	<insert id="batchInsert">
+		insert into bg_kline(period,symbol,timestamp,amount,count,open,close,low,high,vol,real_open,real_close,	real_low,real_high) values
+		<foreach item="kline" index="index" collection="list" separator=",">
+			(#{kline.period},#{kline.symbol},#{kline.timestamp},#{kline.amount},#{kline.count},#{kline.open},#{kline.close},#{kline.low},#{kline.high},#{kline.vol},#{kline.realOpen},#{kline.realClose},#{kline.realLow},#{kline.realHigh})
+		</foreach>
+	</insert>
+
+	
+</mapper> 

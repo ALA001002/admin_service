@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.TimeCurrencyConfMapper">
+    
+    <resultMap type="TimeCurrencyConf" id="TimeCurrencyConfResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="symbol"    column="symbol"    />
+        <result property="surplus"    column="surplus"    />
+        <result property="deficit"    column="deficit"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTimeCurrencyConfVo">
+        select id, name, symbol, surplus, deficit, create_time, update_by, update_time from bg_time_currency_conf
+    </sql>
+
+    <select id="selectTimeCurrencyConfList" parameterType="TimeCurrencyConf" resultMap="TimeCurrencyConfResult">
+        <include refid="selectTimeCurrencyConfVo"/>
+        <where>  
+            <if test="symbol != null  and symbol != ''"> and symbol = #{symbol}</if>
+            <if test="surplus != null "> and surplus = #{surplus}</if>
+            <if test="deficit != null "> and deficit = #{deficit}</if>
+        </where>
+    </select>
+    
+    <select id="selectTimeCurrencyConfById" parameterType="Long" resultMap="TimeCurrencyConfResult">
+        <include refid="selectTimeCurrencyConfVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTimeCurrencyConf" parameterType="TimeCurrencyConf" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_time_currency_conf
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="symbol != null">symbol,</if>
+            <if test="surplus != null">surplus,</if>
+            <if test="deficit != null">deficit,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="symbol != null">#{symbol},</if>
+            <if test="surplus != null">#{surplus},</if>
+            <if test="deficit != null">#{deficit},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTimeCurrencyConf" parameterType="TimeCurrencyConf">
+        update bg_time_currency_conf
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="symbol != null">symbol = #{symbol},</if>
+            <if test="surplus != null">surplus = #{surplus},</if>
+            <if test="deficit != null">deficit = #{deficit},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTimeCurrencyConfById" parameterType="Long">
+        delete from bg_time_currency_conf where id = #{id}
+    </delete>
+
+    <delete id="deleteTimeCurrencyConfByIds" parameterType="String">
+        delete from bg_time_currency_conf where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

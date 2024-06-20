@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.TimePeriodMapper">
+
+	<resultMap type="TimePeriod" id="TimePeriodResult">
+		<id     property="id"       	column="id"      />
+		<result property="symbol"       	column="symbol"  />
+		<result property="period"       	column="period"  />
+		<result property="yieldRate"     	column="yield_rate"  />
+		<result property="lossRate"     	column="loss_rate"  />
+		<result property="status"     column="status"     />
+		<result property="updateTime"     column="update_time"     />
+		<result property="minMoney"     column="min_money"     />
+	</resultMap>
+
+	<select id="listAllPeriod" resultMap="TimePeriodResult">
+		select * from bg_time_period where `status` = 0 order by id asc
+	</select>
+	
+	<insert id="insert" parameterType="TimePeriod" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_time_period
+ 		    (symbol, period, yield_rate, loss_rate,`status`,update_time,min_money)
+ 		values
+ 			(#{symbol},#{period},#{yieldRate},#{lossRate},#{status},now(),#{minMoney})
+	</insert>
+
+	<update id="update" parameterType="TimePeriod">
+		update bg_time_period
+		<set>
+			<if test="period != null">period = #{period}, </if>
+			<if test="yieldRate != null">yield_rate = #{yieldRate}, </if>
+			<if test="lossRate != null">loss_rate = #{lossRate}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="updateTime != null">update_time = #{updateTime}, </if>
+			<if test="minMoney != null">min_money = #{minMoney}, </if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="deleteById" parameterType="Long" >
+		delete from bg_time_period where id=#{id}
+	</update>
+
+	<select id="getByPeriod" parameterType="Integer" resultMap="TimePeriodResult">
+		select * from bg_time_period where period=#{period} and `status`=0
+	</select>
+
+	<select id="listByEntity" parameterType="TimePeriod" resultMap="TimePeriodResult">
+		select
+			*
+		from bg_time_period
+		where 1=1
+		<if test="period != null ">and period = #{period}</if>
+		<if test="status != null">and `status`= #{status}</if>
+		<if test="symbol != null">and symbol = #{symbol}</if>
+		order by period asc
+	</select>
+
+	<select id="selectTimePeriodById" parameterType="TimePeriod" resultMap="TimePeriodResult">
+		select
+		*
+		from bg_time_period
+		where 1=1
+		<if test="id != null">and id = #{id}</if>
+		<if test="period != null ">and period = #{period}</if>
+		<if test="status != null">and `status`= #{status}</if>
+		<if test="symbol != null">and symbol = #{symbol}</if>
+	</select>
+
+</mapper> 

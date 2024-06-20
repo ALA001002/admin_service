@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.product.mapper.ProductTypeMapper">
+    
+    <resultMap type="ProductType" id="ProductTypeResult">
+        <result property="id"    column="id"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectProductTypeVo">
+        select id, type_name, status, create_time from bg_product_type
+    </sql>
+
+    <select id="selectProductTypeList" parameterType="ProductType" resultMap="ProductTypeResult">
+        <include refid="selectProductTypeVo"/>
+        <where>  
+            <if test="typeName != null  and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectProductTypeById" parameterType="Long" resultMap="ProductTypeResult">
+        <include refid="selectProductTypeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProductType" parameterType="ProductType" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_product_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="typeName != null">type_name,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="typeName != null">#{typeName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductType" parameterType="ProductType">
+        update bg_product_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="typeName != null">type_name = #{typeName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductTypeById" parameterType="Long">
+        delete from bg_product_type where id = #{id}
+    </delete>
+
+    <delete id="deleteProductTypeByIds" parameterType="String">
+        delete from bg_product_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listProductTypeOrder" resultType="ProductTypeVO" parameterType="Long">
+        SELECT
+            typeId,
+            typeName,
+            IFNULL((select sum(purchase_amount) from bg_product_order  where type_id = bpt.typeId and uid = #{uid}), 0) AS purchaseAmount,
+            IFNULL((select SUM(profit_amount) from bg_product_order  where type_id = bpt.typeId and uid = #{uid}), 0) AS profitAmount
+        FROM
+            (
+                SELECT
+                    id AS typeId,
+                    type_name AS typeName
+                FROM
+                    bg_product_type
+                WHERE
+                    status = 1
+            ) bpt
+    </select>
+    
+</mapper>

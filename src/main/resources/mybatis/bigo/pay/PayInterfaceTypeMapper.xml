@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.pay.mapper.PayInterfaceTypeMapper">
+    
+    <resultMap type="PayInterfaceType" id="PayInterfaceTypeResult">
+        <result property="id"    column="id"    />
+        <result property="ifTypeCode"    column="if_type_code"    />
+        <result property="ifTypeName"    column="if_type_name"    />
+        <result property="status"    column="status"    />
+        <result property="param"    column="param"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPayInterfaceTypeVo">
+        select id, if_type_code, if_type_name, status, param, remark, create_time, update_time from bg_pay_interface_type
+    </sql>
+
+    <select id="selectPayInterfaceTypeList" parameterType="PayInterfaceType" resultMap="PayInterfaceTypeResult">
+        <include refid="selectPayInterfaceTypeVo"/>
+        <where>  
+            <if test="ifTypeCode != null  and ifTypeCode != ''"> and if_type_code = #{ifTypeCode}</if>
+            <if test="ifTypeName != null  and ifTypeName != ''"> and if_type_name like concat('%', #{ifTypeName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="param != null  and param != ''"> and param = #{param}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectPayInterfaceTypeById" parameterType="String" resultMap="PayInterfaceTypeResult">
+        <include refid="selectPayInterfaceTypeVo"/>
+        where if_type_code = #{ifTypeCode}
+    </select>
+        
+    <insert id="insertPayInterfaceType" parameterType="PayInterfaceType">
+        insert into bg_pay_interface_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ifTypeCode != null">if_type_code,</if>
+            <if test="ifTypeName != null and ifTypeName != ''">if_type_name,</if>
+            <if test="status != null">status,</if>
+            <if test="param != null and param != ''">param,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ifTypeCode != null">#{ifTypeCode},</if>
+            <if test="ifTypeName != null and ifTypeName != ''">#{ifTypeName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="param != null and param != ''">#{param},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePayInterfaceType" parameterType="PayInterfaceType">
+        update bg_pay_interface_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ifTypeName != null and ifTypeName != ''">if_type_name = #{ifTypeName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="param != null and param != ''">param = #{param},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where if_type_code = #{ifTypeCode}
+    </update>
+
+    <delete id="deletePayInterfaceTypeById" parameterType="String">
+        delete from bg_pay_interface_type where if_type_code = #{ifTypeCode}
+    </delete>
+
+    <delete id="deletePayInterfaceTypeByIds" parameterType="String">
+        delete from bg_pay_interface_type where if_type_code in
+        <foreach item="ifTypeCode" collection="array" open="(" separator="," close=")">
+            #{ifTypeCode}
+        </foreach>
+    </delete>
+    
+</mapper>

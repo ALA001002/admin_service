@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.contract.mapper.ContractMapper">
+
+	<resultMap type="Contract" id="ContractResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="title"  		property="title"  />
+		<result column="money"           property="money"          />
+		<result column="replenish"           property="replenish"   />
+		<result column="fee"       	property="fee"       />
+		<result column="capital_fee"       	property="capitalFee"       />
+		<result column="status"     		property="status"     />
+		<result column="contract_plan_id"       property="contractPlanId"       />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="period"      		property="period"     />
+		<result column="buy_time"    	property="buyTime"   />
+		<result column="buy_price"     	property="buyPrice"    />
+		<result column="sell_time"     		property="sellTime"    />
+		<result column="sell_price"   		property="sellPrice"  />
+		<result column="yield_rate"    property="yieldRate"    />
+		<result column="profit"   		property="profit"  />
+		<result column="profit_type"     property="profitType"       />
+		<result column="ori_balance"     			property="oriBalance"    />
+		<result column="new_balance"   		property="newBalance"  />
+		<result column="coupon"     		property="coupon"    />
+		<result column="stop_loss"   			property="stopLoss"  />
+		<result column="stop_surplus"      property="stopSurplus"       />
+		<result column="predict_price"      property="predictPrice"       />
+		<result column="remark"    property="remark"       />
+		<result column="contract_type"       property="contractType"       />
+		<result column="contract_multiple"     property="contractMultiple"       />
+		<result column="compensate_time"     property="compensateTime"  />
+	</resultMap>
+
+	<resultMap type="ContractVO" id="ContractVOResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="money"           property="money"          />
+		<result column="replenish"           property="replenish"   />
+		<result column="fee"       	property="fee"       />
+		<result column="capital_fee"       	property="capitalFee"       />
+		<result column="status"     		property="status"     />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="buy_time"    	property="buyTime"   />
+		<result column="buy_price"     	property="buyPrice"    />
+		<result column="sell_time"     		property="sellTime"    />
+		<result column="sell_price"   		property="sellPrice"  />
+		<result column="yield_rate"    property="yieldRate"    />
+		<result column="profit"   		property="profit"  />
+		<result column="profit_type"     property="profitType"       />
+		<result column="coupon"     		property="coupon"    />
+		<result column="stop_loss"   			property="stopLoss"  />
+		<result column="stop_surplus"      property="stopSurplus"       />
+		<result column="predict_price"      property="predictPrice"       />
+		<result column="contract_multiple"     property="contractMultiple"       />
+		<association property="stopInfo" javaType="ContractStopParam">
+			<result property="contractId"       	column="contract_id"      />
+			<result property="contractPlanId"     	column="contract_plan_id"  />
+			<result property="stopSurplusType"     	column="stop_surplus_type"  />
+			<result property="stopSurplus"    	column="stop_surplus_value"  />
+			<result property="stopLossType"     	column="stop_loss_type"     />
+			<result property="stopLoss"     	column="stop_loss_value"     />
+		</association>
+	</resultMap>
+
+	<resultMap type="ContractEntity" id="ContractEntityResult">
+		<id     column="id"       	property="id"      />
+		<result column="uid"       		property="uid"      />
+		<result column="order_no"     	property="orderNo"    />
+		<result column="symbol"        	property="symbol"        />
+		<result column="currency"        	property="currency"        />
+		<result column="title"  		property="title"  />
+		<result column="money"           property="money"          />
+		<result column="replenish"           property="replenish"   />
+		<result column="fee"       	property="fee"       />
+		<result column="capital_fee"       	property="capitalFee"       />
+		<result column="status"     		property="status"     />
+		<result column="contract_plan_id"       property="contractPlanId"       />
+		<result column="trade_type"      	property="tradeType"     />
+		<result column="period"      		property="period"     />
+		<result column="buy_time"    	property="buyTime"   />
+		<result column="buy_price"     	property="buyPrice"    />
+		<result column="sell_time"     		property="sellTime"    />
+		<result column="sell_price"   		property="sellPrice"  />
+		<result column="yield_rate"    property="yieldRate"    />
+		<result column="profit"   		property="profit"  />
+		<result column="profit_type"     property="profitType"       />
+		<result column="ori_balance"     			property="oriBalance"    />
+		<result column="new_balance"   		property="newBalance"  />
+		<result column="coupon"     		property="coupon"    />
+		<result column="stop_loss"   			property="stopLoss"  />
+		<result column="stop_surplus"      property="stopSurplus"       />
+		<result column="predict_price"      property="predictPrice"       />
+		<result column="remark"    property="remark"       />
+		<result column="contract_type"       property="contractType"       />
+		<result column="contract_multiple"     property="contractMultiple"       />
+		<result column="compensate_time"     property="compensateTime"  />
+		<result column="username"     property="username"  />
+		<result column="userStatus"     property="userStatus"  />
+	</resultMap>
+	
+	<insert id="insertContract" parameterType="Contract" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_contract(
+			order_no, uid, symbol, currency, title, money, fee, replenish, `status`, contract_plan_id, trade_type, period, buy_time, buy_price,
+			ori_balance, coupon, stop_loss, stop_surplus, remark, contract_type, contract_multiple, predict_price
+ 		)value (
+			#{orderNo}, #{uid}, #{symbol}, #{currency}, #{title} ,#{money}, #{fee}, #{replenish}, #{status}, #{contractPlanId}, #{tradeType}, #{period}, now(), #{buyPrice},
+			#{oriBalance}, #{coupon}, #{stopLoss} ,#{stopSurplus}, #{remark}, #{contractType}, #{contractMultiple}, #{predictPrice}
+ 		)
+	</insert>
+
+	<select id="listContract" parameterType="Contract" resultMap="ContractResult">
+		select * from bg_contract
+		<where>
+			<if test="uid != null">and uid = #{uid} </if>
+			<if test="status != null">and `status` = #{status} </if>
+			<if test="symbol != null and symbol != ''">and symbol = #{symbol} </if>
+			<if test="contractType != null">and contract_type = #{contractType} </if>
+		</where>
+		order by sell_time desc,buy_time desc
+	</select>
+
+	<select id="listContractVO" parameterType="ContractQueryParam" resultMap="ContractVOResult">
+		select * from bg_contract tc left join bg_stop_info si on si.contract_id = tc.id
+		where 1=1
+		<if test="uid != null">and tc.uid = #{uid} </if>
+		<if test="status != null">and tc.`status` = #{status} </if>
+		<if test="symbol != null and symbol != ''">and tc.symbol = #{symbol} </if>
+		<if test="contractType != null">and tc.contract_type = #{contractType} </if>
+		order by tc.sell_time desc,tc.buy_time desc
+	</select>
+
+	<select id="getByUidAndContractId" parameterType="ContractQueryParam" resultMap="ContractResult">
+		select * from bg_contract
+		where uid=#{uid} and id = #{contractId}
+	</select>
+
+	<select id="getById" parameterType="Long" resultMap="ContractResult">
+		select * from bg_contract
+		where id = #{id}
+	</select>
+
+	<update id="closeContract" parameterType="Contract" >
+		update bg_contract set
+		   `status` = #{status},
+		   sell_price = #{sellPrice},
+		   yield_rate = #{yieldRate},
+		   profit = #{profit},
+		   profit_type = #{profitType},
+		   sell_time = now()
+		where id = #{id}
+	</update>
+
+	<select id="getPlaningContract" resultMap="ContractResult">
+		select * from bg_contract where status = 0
+	</select>
+
+	<update id="updateStopInfo" parameterType="Contract" >
+		update bg_contract
+		set
+		stop_loss = #{stopLoss},
+		stop_surplus = #{stopSurplus}
+		where uid = #{uid} and id = #{id}
+	</update>
+
+	<update id="updateCapitalFee" parameterType="Contract" >
+		update bg_contract set capital_fee = #{capitalFee}
+		where id = #{id}
+	</update>
+
+	<select id="listContractByMap" parameterType="Map" resultType="Contract">
+		select
+			uid,
+			currency,
+			money,
+			buy_time as buyTime,
+			contract_multiple as contractMultiple
+		from bg_contract
+		where buy_time &gt;= #{startTime} and buy_time &lt;= #{endTime}
+		and uid in
+		<foreach collection="uidList" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<update id="updateReplenish" parameterType="Contract" >
+		update bg_contract
+		set replenish = #{replenish}, predict_price = #{predictPrice}
+		where uid = #{uid} and id = #{id} and status = 0
+	</update>
+
+	<select id="listByEntity" parameterType="ContractEntity" resultMap="ContractEntityResult">
+		select c.*,IFNULL(u.phone, u.email) as username, u.status as userStatus
+		from bg_contract c
+		left join bg_user u on u.uid=c.uid
+		<where>
+			<if test="id != null">and c.id = #{id} </if>
+			<if test="orderNo != null and orderNo != ''">and c.order_no = #{orderNo} </if>
+			<if test="uid != null">and c.uid = #{uid} </if>
+			<if test="status != null">and c.`status` = #{status} </if>
+			<if test="currency != null and currency != ''">and c.currency = #{currency} </if>
+			<if test="symbol != null and symbol != ''">and c.symbol = #{symbol} </if>
+			<if test="contractType != null">and c.contract_type = #{contractType} </if>
+			<if test="agentId != null">and u.top_uid = #{agentId}</if>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(c.buy_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(c.buy_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by c.sell_time desc,c.buy_time desc
+	</select>
+
+	<select id="getTotalFeeByUid" resultType="BigDecimal">
+		select IFNULL(sum(fee), 0) from bg_contract where uid=#{uid} and currency=#{currency}
+	</select>
+
+	<select id="getTotalAmountByUid" resultType="BigDecimal">
+		select IFNULL(sum(money), 0) from bg_contract where uid=#{uid} and currency=#{currency} and `status`=0
+	</select>
+	
+</mapper> 

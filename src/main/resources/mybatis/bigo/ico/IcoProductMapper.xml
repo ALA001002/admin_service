@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.ico.mapper.IcoProductMapper">
+    
+    <resultMap type="IcoProduct" id="IcoProductResult">
+        <result property="id"    column="id"    />
+        <result property="icoCurrency"    column="ico_currency"    />
+        <result property="status"    column="status"    />
+        <result property="totalNum"    column="total_num"    />
+        <result property="buyPrice"    column="buy_price"    />
+        <result property="buyCurrency"    column="buy_currency"    />
+        <result property="buyTimes"    column="buy_times"    />
+        <result property="buyNum"    column="buy_num"    />
+        <result property="boughtNum"    column="bought_num"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="overTime"    column="over_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="logoImg"    column="logo_img"    />
+
+    </resultMap>
+
+    <sql id="selectIcoProductVo">
+        select id, ico_currency, status, total_num, buy_price, buy_currency, buy_times, buy_num, bought_num, start_time, over_time, create_time,logo_img from bg_ico_product
+    </sql>
+
+    <select id="selectIcoProductList" parameterType="IcoProduct" resultMap="IcoProductResult">
+        <include refid="selectIcoProductVo"/>
+        <where>  
+            <if test="icoCurrency != null  and icoCurrency != ''"> and ico_currency = #{icoCurrency}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="totalNum != null "> and total_num = #{totalNum}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="buyCurrency != null  and buyCurrency != ''"> and buy_currency = #{buyCurrency}</if>
+            <if test="buyTimes != null "> and buy_times = #{buyTimes}</if>
+            <if test="buyNum != null "> and buy_num = #{buyNum}</if>
+            <if test="boughtNum != null "> and bought_num = #{boughtNum}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="overTime != null "> and over_time = #{overTime}</if>
+        </where>
+    </select>
+
+    <select id="selectProductListVO" parameterType="IcoProductVO" resultType="IcoProductVO">
+        SELECT
+        id,
+        ico_currency as icoCurrency,
+        status,
+        total_num as totalNum,
+        buy_price as buyPrice,
+        buy_currency as buyCurrency,
+        buy_times as buyTimes,
+        buy_num as buyNum,
+        bought_num as boughtNum,
+        start_time as startTime,
+        over_time as overTime,
+        create_time as createTime,
+        logo_img as logoImg
+        from
+        bg_ico_product
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="icoCurrency != null  and icoCurrency != ''"> and ico_currency = #{icoCurrency}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="totalNum != null "> and total_num = #{totalNum}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="buyCurrency != null  and buyCurrency != ''"> and buy_currency = #{buyCurrency}</if>
+            <if test="boughtNum != null "> and bought_num = #{boughtNum}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="overTime != null "> and over_time = #{overTime}</if>
+        </where>
+    </select>
+
+
+    <select id="selectIcoProduct" parameterType="IcoProduct" resultType="IcoProduct">
+        SELECT
+        id,
+        ico_currency as icoCurrency,
+        status,
+        total_num as totalNum,
+        buy_price as buyPrice,
+        buy_currency as buyCurrency,
+        buy_times as buyTimes,
+        buy_num as buyNum,
+        bought_num as boughtNum,
+        start_time as startTime,
+        over_time as overTime,
+        create_time as createTime,
+        logo_img as logoImg
+        from
+        bg_ico_product
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="icoCurrency != null  and icoCurrency != ''"> and ico_currency = #{icoCurrency}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="totalNum != null "> and total_num = #{totalNum}</if>
+            <if test="buyPrice != null "> and buy_price = #{buyPrice}</if>
+            <if test="buyCurrency != null  and buyCurrency != ''"> and buy_currency = #{buyCurrency}</if>
+            <if test="buyTimes != null "> and buy_times = #{buyTimes}</if>
+            <if test="buyNum != null "> and buy_num = #{buyNum}</if>
+            <if test="boughtNum != null "> and bought_num = #{boughtNum}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="overTime != null "> and over_time = #{overTime}</if>
+        </where>
+    </select>
+
+
+    
+    <select id="selectIcoProductById" parameterType="Long" resultMap="IcoProductResult">
+        <include refid="selectIcoProductVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertIcoProduct" parameterType="IcoProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_ico_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="icoCurrency != null">ico_currency,</if>
+            <if test="status != null">status,</if>
+            <if test="totalNum != null">total_num,</if>
+            <if test="buyPrice != null">buy_price,</if>
+            <if test="buyCurrency != null">buy_currency,</if>
+            <if test="buyTimes != null">buy_times,</if>
+            <if test="buyNum != null">buy_num,</if>
+            <if test="boughtNum != null">bought_num,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="overTime != null">over_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="logoImg != null">logo_img,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="icoCurrency != null">#{icoCurrency},</if>
+            <if test="status != null">#{status},</if>
+            <if test="totalNum != null">#{totalNum},</if>
+            <if test="buyPrice != null">#{buyPrice},</if>
+            <if test="buyCurrency != null">#{buyCurrency},</if>
+            <if test="buyTimes != null">#{buyTimes},</if>
+            <if test="buyNum != null">#{buyNum},</if>
+            <if test="boughtNum != null">#{boughtNum},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="overTime != null">#{overTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="logoImg != null">#{logoImg},</if>
+         </trim>
+    </insert>
+
+    <update id="updateIcoProduct" parameterType="IcoProduct">
+        update bg_ico_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="icoCurrency != null">ico_currency = #{icoCurrency},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="totalNum != null">total_num = #{totalNum},</if>
+            <if test="buyPrice != null">buy_price = #{buyPrice},</if>
+            <if test="buyCurrency != null">buy_currency = #{buyCurrency},</if>
+            <if test="buyTimes != null">buy_times = #{buyTimes},</if>
+            <if test="buyNum != null">buy_num = #{buyNum},</if>
+            <if test="boughtNum != null">bought_num = #{boughtNum},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="overTime != null">over_time = #{overTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="logoImg != null">logo_img = #{logoImg},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="reduceInventory" parameterType="IcoProduct">
+        update bg_ico_product set bought_num = bought_num + #{buyNum} where id = #{id} and bought_num + #{buyNum} &lt;= total_num
+    </update>
+
+    <delete id="deleteIcoProductById" parameterType="Long">
+        delete from bg_ico_product where id = #{id}
+    </delete>
+
+    <delete id="deleteIcoProductByIds" parameterType="String">
+        delete from bg_ico_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

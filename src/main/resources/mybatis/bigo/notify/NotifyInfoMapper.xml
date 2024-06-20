@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.notify.mapper.NotifyInfoMapper">
+
+	<sql id="selectNotifyInfo">
+		id,user_id,num,type
+	</sql>
+
+	<resultMap type="NotifyInfo" id="NotifyInfoResult">
+		<id     property="id"           column="id" />
+		<result property="userId"       	column="user_id" />
+		<result property="num"     column="num" />
+		<result property="type"      column="type" />
+	</resultMap>
+
+	<insert id="insertNotify" parameterType="NotifyInfo" useGeneratedKeys="true" keyProperty="id">
+ 		insert into notify_info(
+			type,user_id,num
+ 		) value (
+			#{type},#{userId},#{num}
+ 		)
+	</insert>
+
+	<select id="queryNotify" parameterType="NotifyInfo" resultType="NotifyInfo">
+		select
+			<include refid="selectNotifyInfo"/>
+		from notify_info
+		where user_id = #{userId}
+	</select>
+
+	<select id="updateNotify" parameterType="NotifyInfo">
+		update notify_info set num=#{num} where id=#{id}
+	</select>
+
+</mapper>

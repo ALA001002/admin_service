@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.captcha.mapper.CaptchaMapper">
+
+	<resultMap type="Captcha" id="CaptchaResult">
+		<id     property="id"       	column="id"      />
+		<result property="captcha"       	column="captcha"  />
+		<result property="phone"     	column="phone"  />
+		<result property="email"     column="email"     />
+		<result property="status"  		column="status"  />
+		<result property="expireTime"        column="expire_time"   />
+		<result property="ip"       	column="ip"    />
+		<result property="createTime"    column="create_time"   />
+	</resultMap>
+
+	<select id="getByParam" parameterType="Captcha" resultMap="CaptchaResult">
+		select * from t_captcha
+		where 1=1
+		<if test="phone != null and phone != ''">
+			AND phone = #{phone}
+		</if>
+		<if test="status != null and status != ''">
+			AND `status` = #{status}
+		</if>
+		<if test="email != null and email != ''">
+			AND email = #{email}
+		</if>
+		<if test="captcha != null and captcha != ''">
+			AND captcha = #{captcha}
+		</if>
+		<if test="expireTime != null">
+			AND expire_time &gt;= #{expireTime}
+		</if>
+		order by id desc limit 1;
+	</select>
+	
+	<insert id="insert" parameterType="Captcha" useGeneratedKeys="true" keyProperty="id">
+ 		insert into t_captcha
+ 		    (captcha,phone,	email,`status`,	expire_time,ip,	create_time)
+ 		values
+ 			(#{captcha},#{phone},#{email},#{status},#{expireTime},#{ip},now())
+	</insert>
+
+	<update id="updateStatus" parameterType="Long">
+		update t_captcha set `status` = 1 where id = #{id}
+	</update>
+
+	
+</mapper> 

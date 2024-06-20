@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.loans.mapper.LoansThresholdMapper">
+    
+    <resultMap type="LoansThreshold" id="LoansThresholdResult">
+        <result property="id"    column="id"    />
+        <result property="rechargeAmount"    column="recharge_amount"    />
+        <result property="minAmount"    column="min_amount"    />
+        <result property="interest"    column="interest"    />
+        <result property="quotaMultiplier"    column="quota_multiplier"    />
+        <result property="minRepaymentRate"    column="min_repayment_rate"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLoansThresholdVo">
+        select id, recharge_amount, min_amount, interest, quota_multiplier,min_repayment_rate, create_time, update_time from bg_loans_threshold
+    </sql>
+
+    <select id="selectLoansThresholdList" parameterType="LoansThreshold" resultMap="LoansThresholdResult">
+        <include refid="selectLoansThresholdVo"/>
+        <where>  
+            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
+            <if test="minAmount != null "> and min_amount = #{minAmount}</if>
+            <if test="interest != null "> and interest = #{interest}</if>
+        </where>
+    </select>
+    
+    <select id="selectLoansThresholdById" parameterType="Long" resultMap="LoansThresholdResult">
+        <include refid="selectLoansThresholdVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLoansThreshold" parameterType="LoansThreshold" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_loans_threshold
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rechargeAmount != null">recharge_amount,</if>
+            <if test="minAmount != null">min_amount,</if>
+            <if test="interest != null">interest,</if>
+            <if test="quotaMultiplier != null">quota_multiplier,</if>
+            <if test="minRepaymentRate != null">min_repayment_rate,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rechargeAmount != null">#{rechargeAmount},</if>
+            <if test="minAmount != null">#{minAmount},</if>
+            <if test="interest != null">#{interest},</if>
+            <if test="quotaMultiplier != null">#{quotaMultiplier},</if>
+            <if test="minRepaymentRate != null">#{minRepaymentRate},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLoansThreshold" parameterType="LoansThreshold">
+        update bg_loans_threshold
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
+            <if test="minAmount != null">min_amount = #{minAmount},</if>
+            <if test="interest != null">interest = #{interest},</if>
+            <if test="quotaMultiplier != null">quota_multiplier = #{quotaMultiplier},</if>
+            <if test="minRepaymentRate != null">min_repayment_rate = #{minRepaymentRate},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLoansThresholdById" parameterType="Long">
+        delete from bg_loans_threshold where id = #{id}
+    </delete>
+
+    <delete id="deleteLoansThresholdByIds" parameterType="String">
+        delete from bg_loans_threshold where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.otc.mapper.OrderMapper">
+
+	<sql id="selectOrder">
+		o.id,
+		o.order_no as orderNo,
+		o.coin,
+		o.amount,
+		o.price,
+		o.legal_currency as legalCurrency,
+		o.seller_id as sellerId,
+		o.seller_contract_info as sellerContractInfo,
+		o.buyer_id as buyerId,
+		o.buyer_contract_info as buyerContractInfo,
+		o.`status`,
+		o.create_time as createTime,
+		o.pay_time as payTime,
+		o.confirm_time as confirmTime,
+		o.expire_time as expireTime,
+		o.revoke_time as revokeTime,
+		o.bank_name as bankName,
+		o.bank_branch as bankBranch,
+		o.bank_account as bankAccount,
+		o.payee,
+		o.pay_type as payType
+	</sql>
+
+	<select id="listByParam" parameterType="Order" resultType="Order">
+		select
+			<include refid="selectOrder"/>
+		from bg_otc_order o
+		<where>
+			<if test="uid != null">and (o.seller_id=#{uid} or o.buyer_id=#{uid}) </if>
+			<if test="sellerId != null">and o.seller_id=#{sellerId}</if>
+			<if test="buyerId != null">and o.buyer_id=#{buyerId}</if>
+			<if test="status != null">and o.`status`=#{status}</if>
+			<if test="coin != null">and o.coin=#{coin}</if>
+		</where>
+		order by o.id desc
+	</select>
+	
+	<insert id="insert" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_otc_order
+ 		    (order_no,coin,	amount,price,legal_currency,bank_name,bank_branch,bank_account,payee,seller_id
+ 		    ,seller_contract_info,buyer_id,buyer_contract_info,`status`,expire_time,create_time)
+ 		values
+ 			(#{orderNo},#{coin},#{amount},#{price},#{legalCurrency},#{bankName},#{bankBranch},#{bankAccount},#{payee},#{sellerId}
+ 			,#{sellerContractInfo},#{buyerId},#{buyerContractInfo},#{status},#{expireTime},now())
+	</insert>
+
+	<update id="update" parameterType="Order">
+		update bg_otc_order
+		<set>
+			<if test="status != null">`status` = #{status},</if>
+			<if test="status != null and status == 1">pay_time = now(),</if>
+			<if test="status != null and status == 2">confirm_time = now(),</if>
+			<if test="status != null and status >= 5">revoke_time = now(),</if>
+			<if test="expireTime != null">expire_time = #{expireTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getById" parameterType="Long" resultType="Order">
+		select
+			<include refid="selectOrder"/>
+	 	from bg_otc_order o
+		where o.id=#{id}
+	</select>
+
+	<select id="listExpireOrder" resultType="Order">
+		select
+			<include refid="selectOrder"/>
+		from bg_otc_order o
+		where o.status &lt;= 1 and o.expire_time &lt;= now()
+	</select>
+
+	<select id="listByEntity" parameterType="OrderEntity" resultType="OrderEntity">
+		select
+			<include refid="selectOrder"/>
+		from bg_otc_order o
+		where 1=1
+		<if test="uid != null">and (o.seller_id=#{sellerId} or o.buyer_id=#{buyerId}) and `status` &lt; 2</if>
+		<if test="sellerId != null">and o.seller_id=#{sellerId}</if>
+		<if test="buyerId != null">and o.buyer_id=#{buyerId}</if>
+		<if test="status != null">and o.`status`=#{status}</if>
+		<if test="coin != null">and o.coin=#{coin}</if>
+		<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+			and date_format(o.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+		</if>
+		<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+			and date_format(o.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+		</if>
+		order by o.id desc
+	</select>
+	<select id="getOrder"  parameterType="Order" resultType="Order">
+		select
+		<include refid="selectOrder"/>
+		from bg_otc_order o
+		where 1=1
+		<if test="id != null">and o.id=#{id}</if>
+		<if test="payType != null">and o.pay_type=#{payType}</if>
+		<if test="uid != null">and (o.seller_id=#{sellerId} or o.buyer_id=#{buyerId}) and `status` &lt; 2</if>
+		<if test="sellerId != null">and o.seller_id=#{sellerId}</if>
+		<if test="buyerId != null">and o.buyer_id=#{buyerId}</if>
+		<if test="status != null">and o.`status`=#{status}</if>
+		<if test="coin != null">and o.coin=#{coin}</if>
+		order by o.id desc
+	</select>
+</mapper> 

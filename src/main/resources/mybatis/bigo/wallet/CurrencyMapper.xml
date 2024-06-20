@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.CurrencyMapper">
+
+	<resultMap type="Currency" id="CurrencyResult">
+		<id     property="id"           column="id" />
+		<result property="currency"       	column="currency" />
+		<result property="status"     column="status" />
+		<result property="order"      column="order" />
+		<result property="virtual"  		column="virtual"  />
+		<result property="supRecharge"  		column="sup_recharge"  />
+		<result property="supWithdraw"  		column="sup_withdraw"  />
+		<result property="supExchange"     column="sup_exchange" />
+		<result property="supNormalContract"  		column="sup_normal_contract"  />
+		<result property="supTimeContract"      column="sup_time_contract" />
+	</resultMap>
+	
+	<insert id="insert" parameterType="Currency" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_currency(currency, status, order, virtual, sup_recharge, sup_withdraw, sup_exchange, sup_normal_contract, sup_time_contract)
+ 		values(#{currency}, #{status}, #{order}, #{virtual}, #{supRecharge}, #{supWithdraw}, #{supExchange}, #{supNormalContract}, #{supTimeContract})
+	</insert>
+	
+	<update id="update" parameterType="Currency">
+		update bg_currency
+			<set>
+				<if test="status != null">`status` = #{status},</if>
+				<if test="order != null">`order` = #{order},</if>
+				<if test="virtual != null">`virtual` = #{virtual},</if>
+				<if test="supRecharge != null">sup_recharge = #{supRecharge},</if>
+				<if test="supWithdraw != null">sup_withdraw = #{supWithdraw},</if>
+				<if test="supExchange != null">sup_exchange = #{supExchange},</if>
+				<if test="supNormalContract != null">sup_normal_contract = #{supNormalContract},</if>
+				<if test="supTimeContract != null">sup_time_contract = #{supTimeContract},</if>
+			</set>
+		where id = #{id}
+	</update>
+
+	<select id="getByCode" parameterType="Currency" resultMap="CurrencyResult">
+		select
+			*
+		from bg_currency
+		where currency = #{code}
+	</select>
+
+
+
+</mapper> 

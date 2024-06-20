@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.agent.mapper.AgentWithdrawMapper">
+
+	<insert id="insert" parameterType="AgentWithdraw" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_agent_withdraw(
+			agent_id, coin, amount, to_address, `status`, create_time
+ 		) value (
+			#{agentId}, #{coin}, #{amount}, #{toAddress}, 0, now()
+ 		)
+	</insert>
+
+	<update id="update" parameterType="AgentWithdraw">
+		update bg_agent_withdraw set
+			<if test="status != null">`status` = #{status},</if>
+			<if test="hash != null">`hash` = #{hash},</if>
+			operator_id = #{operatorId},
+			operate_time = now()
+		where id = #{id}
+	</update>
+
+	<select id="listByEntity" parameterType="AgentWithdraw" resultType="AgentWithdraw">
+		select
+			wd.id,
+		    wd.agent_id as agentId,
+			wd.coin,
+			wd.status,
+			wd.amount,
+		    wd.to_address as toAddress,
+			wd.hash,
+			wd.create_time as createTime,
+		    wd.operator_id as operatorId,
+		    wd.operate_time as operateTime,
+			ag.agent_name as agentName,
+		    u.user_name as operatorName
+		from bg_agent_withdraw wd
+		left join sys_user u on wd.operator_id = u.user_id
+		left join bg_agent ag on wd.agent_id = ag.agent_id
+		<where>
+			<if test="coin != null">
+				and wd.coin = #{coin}
+			</if>
+			<if test="agentName != null">
+				and ag.agent_name like concat('%',#{agentName},'%')
+			</if>
+			<if test="agentId != null">
+				and wd.agent_id = #{agentId}
+			</if>
+			<if test="status != null">
+				and wd.status = #{status}
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(wd.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(wd.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by wd.status asc, wd.id desc
+	</select>
+
+	<select id="getById" parameterType="Long" resultType="AgentWithdraw">
+		select
+			wd.id,
+			wd.agent_id as agentId,
+			wd.coin,
+			wd.status,
+			wd.amount,
+			wd.to_address as toAddress,
+			wd.hash,
+			wd.create_time as createTime,
+			wd.operator_id as operatorId,
+			wd.operate_time as operateTime
+		from bg_agent_withdraw wd where id = #{id}
+	</select>
+	
+</mapper> 

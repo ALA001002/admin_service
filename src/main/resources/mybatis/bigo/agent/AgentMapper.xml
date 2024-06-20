@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.agent.mapper.AgentMapper">
+
+	<resultMap type="Agent" id="AgentResult">
+		<id     property="agentId"       	column="agent_id"      />
+		<result property="agentCode"       	column="agent_code"  />
+		<result property="userId"       	column="user_id"  />
+		<result property="status"     	column="status"  />
+		<result property="agentName"     	column="agent_name"  />
+		<result property="feeShareRate"     column="fee_share_rate"     />
+		<result property="profitShareRate"     column="profit_share_rate"     />
+		<result property="cashDeposit"  		column="cash_deposit"  />
+		<result property="usdtBalance"        column="usdt_balance"   />
+		<result property="ethBalance"       	column="eth_balance"    />
+		<result property="bigoBalance"        column="bigo_balance"   />
+		<result property="createTime"    column="create_time"   />
+	</resultMap>
+
+	<select id="getByAgentId" parameterType="Long" resultMap="AgentResult">
+		select * from bg_agent where agent_id = #{agentId}
+	</select>
+
+	<select id="getByUserId" parameterType="Long" resultMap="AgentResult">
+		select * from bg_agent where user_id = #{userId}
+	</select>
+
+	<select id="getAgentForUpdate" parameterType="Long" resultMap="AgentResult">
+		select * from bg_agent where agent_id = #{agentId} for update
+	</select>
+
+	<select id="getAgentIdByAgentCode" parameterType="Long" resultType="Long">
+		select agent_id from bg_agent where agent_code = #{agentCode}
+	</select>
+	
+	<insert id="insert" parameterType="Agent" useGeneratedKeys="true" keyProperty="agentId">
+ 		insert into bg_agent
+ 		    (agent_id,user_id,`status`,agent_code,agent_name,fee_share_rate,profit_share_rate,cash_deposit,usdt_balance,eth_balance,bigo_balance,create_time)
+ 		values
+ 			(#{agentId},#{userId},#{status},#{agentCode},#{agentName},#{feeShareRate},#{profitShareRate},#{cashDeposit},#{usdtBalance},#{ethBalance},#{bigoBalance},now())
+	</insert>
+
+	<update id="addBalance" parameterType="Agent">
+		update bg_agent set usdt_balance = usdt_balance + #{usdtBalance}, eth_balance = eth_balance + #{ethBalance} where agent_id = #{agentId}
+	</update>
+
+	<update id="updateStatus" parameterType="Agent">
+		update bg_agent set `status` = #{status} where agent_id = #{agentId}
+	</update>
+
+	<update id="update" parameterType="Agent">
+		update bg_agent set
+			fee_share_rate = #{feeShareRate},
+			profit_share_rate = #{profitShareRate},
+			agent_name = #{agentName}
+		where agent_id = #{agentId}
+	</update>
+
+	<select id="listByEntity" parameterType="Agent" resultType="Agent">
+		select
+		ag.agent_id as agentId,
+		ag.agent_code as agentCode,
+		ag.user_id as userId,
+		ag.`status`,
+		ag.agent_name as agentName,
+		ag.fee_share_rate as feeShareRate,
+		ag.profit_share_rate as profitShareRate,
+		ag.cash_deposit as cashDeposit,
+		ag.usdt_balance as usdtBalance,
+		ag.eth_balance as ethBalance,
+		ag.bigo_balance as bigoBalance,
+		ag.create_time as createTime,
+		su.user_name as loginName
+		from bg_agent ag
+		left join sys_user su on ag.user_id = su.user_id
+		<where>
+			<if test="agentName != null and agentName !=''">
+				and ag.agent_name like concat('%',#{agentName},'%')
+			</if>
+			<if test="agentId != null">
+				and ag.agent_id = #{agentId}
+			</if>
+			<if test="agentCode != null">
+				and ag.agent_code = #{agentCode}
+			</if>
+			<if test="status != null">
+				and ag.`status` = #{status}
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(ag..create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(ag..create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by ag.agent_id desc
+	</select>
+	
+</mapper> 

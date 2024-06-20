@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.userinfo.mapper.BigoUserMapper">
+
+	<resultMap type="BigoUser" id="BigoUserResult">
+		<id     property="uid"       		column="uid"      />
+		<result property="avatar"       	column="avatar"      />
+		<result property="nickName"     	column="nick_name"    />
+		<result property="phone"        	column="phone"        />
+		<result property="agentType"  		column="agent_type"  />
+		<result property="level"           column="level"          />
+		<result property="parentUid"      	column="parent_uid"     />
+		<result property="status"      		column="status"     />
+		<result property="authStatus"    	column="auth_status"   />
+		<result property="authPhotos"    	column="auth_photos"   />
+		<result property="authRationale"    	column="auth_rationale"   />
+		<result property="realName"     	column="real_name"    />
+		<result property="idNum"     		column="id_num"    />
+		<result property="passport"   		column="passport"  />
+		<result property="pwdUpdateTime"    column="pwd_update_time"    />
+		<result property="password"   		column="password"  />
+		<result property="payPassword"     column="pay_password"       />
+		<result property="sex"     			column="sex"    />
+		<result property="areaId"   		column="area_id"  />
+		<result property="profile"     		column="profile"    />
+		<result property="email"   			column="email"  />
+		<result property="contractInfo"   			column="contract_info"  />
+		<result property="lastLoginIp"      column="last_login_ip"       />
+		<result property="lastLoginTime"    column="last_login_time"       />
+		<result property="registerIp"       column="register_ip"       />
+		<result property="registerTime"     column="register_time"       />
+		<result property="timeContractStatus"       column="time_contract_status"       />
+		<result property="withdrawStatus"     column="withdraw_status"       />
+		<result property="country"     column="country"       />
+		<result property="driverLicense"     column="driver_license"       />
+		<result property="authType"     column="auth_type"       />
+		<result property="lastLoginArea"      column="last_login_area"       />
+		<result property="registerArea"       column="register_area"       />
+		<result property="whatsapp"       column="whatsapp"       />
+		<result property="remark"       column="remark"       />
+	</resultMap>
+	
+	<select id="getUserByUid" parameterType="Long" resultType="BigoUser">
+		select
+			u.uid,
+			u.avatar,
+			u.nick_name as nickName,
+			u.phone,
+			u.agent_type as agentType,
+			u.`level`,
+			u.parent_uid as parentUid,
+			u.top_uid as topUid,
+			u.`status`,
+			u.auth_status as authStatus,
+			u.auth_photos as authPhotos,
+			u.real_name as realName,
+			u.id_num as idNum,
+			u.password,
+			u.pay_password as payPassword,
+			u.sex,
+			u.area_id as areaId,
+			u.profile,
+			u.email,
+			u.contract_info as contractInfo,
+			u.last_login_ip as lastLoginIp,
+			u.last_login_time as lastLoginTime,
+			u.register_ip as registerIp,
+			u.register_time as registerTime,
+		    u.time_contract_status as timeContractStatus,
+		    u.withdraw_status as withdrawStatus,
+		    u.country as country,
+		    u.driver_license as driverLicense,
+			u.auth_type as authType,
+			u.last_login_area as lastLoginArea,
+			u.register_area as registerArea,
+			u.whatsapp as whatsapp,
+			pu.phone as parentPhone,
+			pu.email as parentEamil,
+			tci.country_en as areaName
+		from bg_user u
+		 left join bg_user pu on pu.uid = u.parent_uid
+		 left join t_country_info tci on u.area_id = tci.id
+		where u.uid = #{uid}
+	</select>
+
+	<select id="getUserByPhone" parameterType="String" resultType="BigoUser">
+		select
+			u.uid,
+			u.avatar,
+			u.nick_name as nickName,
+			u.phone,
+			u.agent_type as agentType,
+			u.`level`,
+			u.parent_uid as parentUid,
+			u.`status`,
+			u.auth_status as authStatus,
+			u.auth_photos as authPhotos,
+			u.real_name as realName,
+			u.id_num as idNum,
+			u.password,
+			u.pay_password as payPassword,
+			u.sex,
+			u.area_id as areaId,
+			u.profile,
+			u.email,
+			u.contract_info as contractInfo,
+			u.last_login_ip as lastLoginIp,
+			u.last_login_time as lastLoginTime,
+			u.register_ip as registerIp,
+			u.register_time as registerTime,
+			u.time_contract_status as timeContractStatus,
+			u.withdraw_status as withdrawStatus,
+			u.country as country,
+			u.driver_license as driverLicense,
+			u.auth_type as authType,
+			u.last_login_area as lastLoginArea,
+			u.register_area as registerArea,
+			u.whatsapp as whatsapp,
+		    pu.phone as parentPhone,
+			pu.email as parentEamil,
+		    tci.country_en as areaName
+	  	from bg_user u
+		left join bg_user pu on pu.uid = u.parent_uid
+		left join t_country_info tci on u.area_id = tci.id
+		where u.phone = #{phone}
+	</select>
+
+	<select id="getUserByEmail" parameterType="String" resultType="BigoUser">
+		select
+			u.uid,
+			u.avatar,
+			u.nick_name as nickName,
+			u.phone,
+			u.agent_type as agentType,
+			u.`level`,
+			u.parent_uid as parentUid,
+			u.`status`,
+			u.auth_status as authStatus,
+			u.auth_photos as authPhotos,
+			u.real_name as realName,
+			u.id_num as idNum,
+			u.password,
+			u.pay_password as payPassword,
+			u.sex,
+			u.area_id as areaId,
+			u.profile,
+			u.email,
+			u.contract_info as contractInfo,
+			u.last_login_ip as lastLoginIp,
+			u.last_login_time as lastLoginTime,
+			u.register_ip as registerIp,
+			u.register_time as registerTime,
+			u.time_contract_status as timeContractStatus,
+			u.withdraw_status as withdrawStatus,
+			u.country as country,
+			u.driver_license as driverLicense,
+			u.auth_type as authType,
+			u.last_login_area as lastLoginArea,
+			u.register_area as registerArea,
+			u.whatsapp as whatsapp,
+			pu.phone as parentPhone,
+			tci.country_en as areaName
+		from bg_user u
+		 left join bg_user pu on pu.uid = u.parent_uid
+		 left join t_country_info tci on u.area_id = tci.id
+		where u.email = #{email}
+	</select>
+
+	
+	<select id="checkNickNameUnique" parameterType="String" resultType="int">
+		select count(1) from bg_user where nick_name = #{nickName}
+	</select>
+	
+	<select id="checkPhoneUnique" parameterType="String" resultType="int">
+		select count(1) from bg_user where phone = #{phone}
+	</select>
+
+	<select id="checkEmailUnique" parameterType="String" resultType="int">
+		select count(1) from bg_user where email = #{email}
+	</select>
+
+	<select id="checkInviteCodeUnique" parameterType="Long" resultType="int">
+		select count(1) from bg_user where uid = #{inviteCode}
+	</select>
+	
+	<insert id="insertUser" parameterType="BigoUser" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_user(
+			<if test="uid != null">uid,</if>
+ 			<if test="password != null and password != ''">password,</if>
+ 			<if test="phone != null and phone != ''">phone,</if>
+			<if test="email != null and email != ''">email,</if>
+			<if test="level != null">`level`,</if>
+			<if test="areaId != null">area_id,</if>
+			<if test="parentUid != null">parent_uid,</if>
+			<if test="topUid != null">top_uid,</if>
+ 			<if test="registerIp != null and registerIp != ''">register_ip,</if>
+			<if test="registerArea != null and registerArea != ''">register_area,</if>
+			register_time
+ 		)values(
+			<if test="uid != null">#{uid},</if>
+ 			<if test="password != null and password != ''">#{password},</if>
+ 			<if test="phone != null and phone != ''">#{phone},</if>
+			<if test="email != null and email != ''">#{email},</if>
+			<if test="level != null">#{level},</if>
+			<if test="areaId != null">#{areaId},</if>
+			<if test="parentUid != null">#{parentUid},</if>
+			<if test="topUid != null">#{topUid},</if>
+ 			<if test="registerIp != null and registerIp != ''">#{registerIp},</if>
+			<if test="registerArea != null and registerArea != ''">#{registerArea},</if>
+ 			now()
+ 		)
+	</insert>
+	
+	<update id="updateUser" parameterType="BigoUser">
+ 		update bg_user
+ 		<set>
+ 			<if test="agentType != null and agentType != ''">agent_type = #{agentType},</if>
+ 			<if test="realName != null and realName != ''">real_name = #{realName},</if>
+ 			<if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+ 			<if test="email != null and email != ''">email = #{email},</if>
+			<if test="level != null">`level` = #{level},</if>
+			<if test="topLevel != null">top_level = #{topLevel},</if>
+ 			<if test="status != null">`status` = #{status},</if>
+ 			<if test="sex != null">sex = #{sex},</if>
+			<if test="areaId != null">area_id = #{areaId},</if>
+ 			<if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+ 			<if test="password != null and password != ''">`password` = #{password},</if>
+ 			<if test="lastLoginIp != null and lastLoginIp != ''">last_login_ip = #{lastLoginIp},</if>
+ 			<if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+			<if test="lastLoginArea != null ">last_login_area = #{lastLoginArea},</if>
+ 			<if test="profile != null">`profile` = #{profile},</if>
+			<if test="passport != null">passport = #{passport},</if>
+			<if test="authStatus != null">auth_status = #{authStatus},</if>
+			<if test="authPhotos != null">auth_photos = #{authPhotos},</if>
+			<if test="authRationale != null">auth_rationale = #{authRationale},</if>
+			<if test="idNum != null">id_num = #{idNum},</if>
+			<if test="parentUid != null">parent_uid = #{parentUid},</if>
+			<if test="topUid != null">top_uid = #{topUid},</if>
+			<if test="contractInfo != null and contractInfo !=''">contract_info = #{contractInfo},</if>
+			<if test="payPassword != null and payPassword != ''">pay_password = #{payPassword},</if>
+			<if test="timeContractStatus != null">time_contract_status = #{timeContractStatus},</if>
+			<if test="withdrawStatus != null">withdraw_status = #{withdrawStatus},</if>
+			<if test="country != null">country = #{country},</if>
+			<if test="driverLicense != null">driver_license = #{driverLicense},</if>
+			<if test="authType != null">auth_type = #{authType},</if>
+			<if test="remark != null">remark = #{remark},</if>
+			<if test="updateTime != null">update_time = #{updateTime},</if>
+			<if test="googleSecretStatus != null">google_secret_status = #{googleSecretStatus},</if>
+ 		</set>
+ 		where uid = #{uid}
+	</update>
+
+	<select id="listChild" parameterType="Long" resultType="BigoUser">
+		select
+			uid,
+			phone,
+			email,
+			register_time as registerTime
+		from bg_user where parent_uid in
+		<foreach collection="list" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+	</select>
+
+	<select id="listByEntity" parameterType="BigoUserEntity" resultType="BigoUserEntity">
+		select
+		u.uid,
+		u.avatar,
+		u.nick_name as nickName,
+		u.phone,
+		u.agent_type as agentType,
+		u.`level`,
+		u.parent_uid as parentUid,
+		u.`status`,
+		u.auth_status as authStatus,
+		u.auth_photos as authPhotos,
+		u.auth_rationale as authRationale,
+		u.real_name as realName,
+		u.id_num as idNum,
+		u.password,
+		u.pay_password as payPassword,
+		u.sex,
+		u.area_id as areaId,
+		u.profile,
+		u.email,
+		u.contract_info as contractInfo,
+		u.last_login_ip as lastLoginIp,
+		u.last_login_time as lastLoginTime,
+		u.register_ip as registerIp,
+		u.register_time as registerTime,
+		u.update_time	as updateTime,
+		u.time_contract_status as timeContractStatus,
+		u.withdraw_status as withdrawStatus,
+		u.country as country,
+		u.driver_license as driverLicense,
+		u.auth_type as authType,
+		u.last_login_area as lastLoginArea,
+		u.register_area as registerArea,
+		u.whatsapp as whatsapp,
+		u.remark as remark,
+		IFNULL(pu.phone,pu.email) as parentName,
+		tci.country_en as areaName,
+		IFNULL(u.phone, u.email) as username,
+	   	l.name as levelName
+		from bg_user u
+		left join bg_user pu on u.parent_uid=pu.uid
+		left join t_country_info tci on u.area_id = tci.id
+		left join bg_level l on l.id = u.level
+		<where>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="uid != null">
+				and u.uid = #{uid}
+			</if>
+			<if test="uids != null and uids != ''">and u.uid in (${uids})</if>
+			<if test="level != null">
+				and l.level = #{level}
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+			<if test="parentName != null and parentName!=''">
+				and (pu.phone like concat('%',#{parentName},'%') or pu.email like concat('%',#{parentName},'%'))
+			</if>
+			<if test="status != null">
+				and u.status = #{status}
+			</if>
+			<if test="authStatus != null">
+				and u.auth_status = #{authStatus}
+			</if>
+			<if test="authFlag != null">
+				and u.auth_status != 0
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by u.register_time desc
+	</select>
+
+
+	<select id="teamListByEntity" parameterType="BigoUserEntity" resultType="BigoUserEntity">
+		select
+		u.uid,
+		u.avatar,
+		u.nick_name as nickName,
+		u.phone,
+		u.agent_type as agentType,
+		u.`level`,
+		u.parent_uid as parentUid,
+		u.`status`,
+		u.auth_status as authStatus,
+		u.auth_photos as authPhotos,
+		u.auth_rationale as authRationale,
+		u.real_name as realName,
+		u.id_num as idNum,
+		u.password,
+		u.pay_password as payPassword,
+		u.sex,
+		u.area_id as areaId,
+		u.profile,
+		u.email,
+		u.contract_info as contractInfo,
+		u.last_login_ip as lastLoginIp,
+		u.last_login_time as lastLoginTime,
+		u.register_ip as registerIp,
+		u.register_time as registerTime,
+		u.update_time	as updateTime,
+		u.time_contract_status as timeContractStatus,
+		u.withdraw_status as withdrawStatus,
+		u.country as country,
+		u.driver_license as driverLicense,
+		u.auth_type as authType,
+		u.last_login_area as lastLoginArea,
+		u.register_area as registerArea,
+		u.whatsapp as whatsapp,
+		u.remark as remark,
+		IFNULL(pu.phone,pu.email) as parentName,
+		tci.country_en as areaName,
+		IFNULL(u.phone, u.email) as username,
+		l.name as levelName
+		from (
+			select * from bg_user where uid in(
+			select distinct
+			uid
+			from(
+			select u2.uid,u2.parent_uid
+			from bg_user u1,bg_user u2
+			where u1.uid=#{teamUid} and u2.parent_uid=u1.uid
+			union all
+			select u3.uid,u3.parent_uid from bg_user u3,(
+			select u2.uid,u2.parent_uid from bg_user u1,bg_user u2
+			where u1.uid=#{teamUid} and u2.parent_uid=u1.uid) t2
+			where t2.uid=u3.parent_uid
+			union all
+			select u4.uid,u4.parent_uid from bg_user u4,(
+			select u3.uid,u3.parent_uid from bg_user u2,bg_user u3
+			where u2.parent_uid=#{teamUid} and u3.parent_uid=u2.uid) t3
+			where t3.uid=u4.parent_uid
+			)a )
+		) u
+		left join bg_user pu on u.parent_uid=pu.uid
+		left join t_country_info tci on u.area_id = tci.id
+		left join bg_level l on l.id = u.level
+		<where>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="uid != null">
+				and u.uid = #{uid}
+			</if>
+			<if test="uids != null and uids != ''">and u.uid in (${uids})</if>
+			<if test="level != null">
+				and l.level = #{level}
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+			<if test="parentName != null and parentName!=''">
+				and (pu.phone like concat('%',#{parentName},'%') or pu.email like concat('%',#{parentName},'%'))
+			</if>
+			<if test="status != null">
+				and u.status = #{status}
+			</if>
+			<if test="authStatus != null">
+				and u.auth_status = #{authStatus}
+			</if>
+			<if test="authFlag != null">
+				and u.auth_status != 0
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by u.register_time desc
+	</select>
+
+	<select id="authListByEntity" parameterType="BigoUserEntity" resultType="BigoUserEntity">
+		select
+		u.uid,
+		u.avatar,
+		u.nick_name as nickName,
+		u.phone,
+		u.agent_type as agentType,
+		u.`level`,
+		u.parent_uid as parentUid,
+		u.`status`,
+		u.auth_status as authStatus,
+		u.auth_photos as authPhotos,
+		u.auth_rationale as authRationale,
+		u.real_name as realName,
+		u.id_num as idNum,
+		u.passport as passport,
+		u.password,
+		u.pay_password as payPassword,
+		u.sex,
+		u.area_id as areaId,
+		u.profile,
+		u.email,
+		u.contract_info as contractInfo,
+		u.last_login_ip as lastLoginIp,
+		u.last_login_time as lastLoginTime,
+		u.register_ip as registerIp,
+		u.register_time as registerTime,
+		u.update_time	as updateTime,
+		u.time_contract_status as timeContractStatus,
+		u.withdraw_status as withdrawStatus,
+		u.country as country,
+		u.driver_license as driverLicense,
+		u.auth_type as authType,
+		u.last_login_area as lastLoginArea,
+		u.register_area as registerArea,
+		u.whatsapp as whatsapp,
+		u.remark as remark,
+		IFNULL(pu.phone,pu.email) as parentName,
+		tci.country_en as areaName,
+		IFNULL(u.phone, u.email) as username,
+		l.name as levelName
+		from bg_user u
+		left join bg_user pu on u.parent_uid=pu.uid
+		left join t_country_info tci on u.area_id = tci.id
+		left join bg_level l on l.id = u.level
+		<where>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="uid != null">
+				and u.uid = #{uid}
+			</if>
+			<if test="uids != null and uids != ''">and u.uid in (${uids})</if>
+			<if test="level != null">
+				and l.level = #{level}
+			</if>
+			<if test="agentId != null">
+				and u.top_uid = #{agentId}
+			</if>
+			<if test="parentName != null and parentName!=''">
+				and (pu.phone like concat('%',#{parentName},'%') or pu.email like concat('%',#{parentName},'%'))
+			</if>
+			<if test="status != null">
+				and u.status = #{status}
+			</if>
+			<if test="authStatus != null">
+				and u.auth_status = #{authStatus}
+			</if>
+			<if test="authFlag != null">
+				and u.auth_status != 0
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by u.update_time desc
+	</select>
+
+	<select id="lowerListEntity" parameterType="BigoUserEntity" resultType="BigoUserEntity">
+		select
+		u.uid,
+		u.avatar,
+		u.nick_name as nickName,
+		u.phone,
+		u.agent_type as agentType,
+		u.`level`,
+		u.parent_uid as parentUid,
+		u.`status`,
+		u.auth_status as authStatus,
+		u.auth_photos as authPhotos,
+		u.auth_rationale as authRationale,
+		u.real_name as realName,
+		u.id_num as idNum,
+		u.password,
+		u.pay_password as payPassword,
+		u.sex,
+		u.area_id as areaId,
+		u.profile,
+		u.email,
+		u.contract_info as contractInfo,
+		u.last_login_ip as lastLoginIp,
+		u.last_login_time as lastLoginTime,
+		u.register_ip as registerIp,
+		u.register_time as registerTime,
+		u.update_time	as updateTime,
+		u.time_contract_status as timeContractStatus,
+		u.withdraw_status as withdrawStatus,
+		u.country as country,
+		u.driver_license as driverLicense,
+		u.auth_type as authType,
+		u.last_login_area as lastLoginArea,
+		u.register_area as registerArea,
+		u.whatsapp as whatsapp,
+		u.remark as remark,
+		IFNULL(pu.phone,pu.email) as parentName,
+		tci.country_en as areaName,
+		IFNULL(u.phone, u.email) as username
+		from bg_user u
+		left join bg_user pu on u.parent_uid=pu.uid
+		left join t_country_info tci on u.area_id = tci.id
+		<where>
+			<if test="uid != null">
+				and u.uid in (with recursive t as
+				(
+				select uid,parent_uid from bg_user where uid = #{uid}
+				union all
+				select a.uid,a.parent_uid from bg_user a join t on a.parent_uid = t.uid
+				)
+				select uid from t)
+			</if>
+		</where>
+		order by u.id desc
+	</select>
+
+	<select id="getParentUids" resultType="BigoUser">
+		select
+			uid, top_level as topLevel
+		FROM
+			bg_user where uid in(select parent_uid from bg_user where parent_uid is not null GROUP BY parent_uid)
+	</select>
+
+	<select id="getAuthUserCount" resultType="java.lang.Long" parameterType="java.lang.Long">
+		select uid from bg_user where uid in(
+		select
+			a.uid
+		from
+		(
+			select u2.uid,u1.uid as topUid
+			from bg_user u1,bg_user u2
+			where u1.uid =#{uid}
+			and u2.parent_uid=u1.uid
+			union all
+			select u3.uid, t2.topUid as topUid from bg_user u3,(
+			select u2.uid,u1.uid as topUid from bg_user u1,bg_user u2
+			where u1.uid = #{uid}
+			and u2.parent_uid=u1.uid) t2
+			where t2.uid=u3.parent_uid
+			union all
+			select u4.uid, t3.topUid from bg_user u4,(
+			select u3.uid,u2.parent_uid as topUid from bg_user u2,bg_user u3
+			where u2.parent_uid = #{uid}
+			and u3.parent_uid=u2.uid) t3
+			where t3.uid=u4.parent_uid
+		) a) and status != 2
+	</select>
+
+
+	<select id="listNeedLevelUpUser" resultType="BigoUser">
+		SELECT
+			u.uid,
+		    u.level,
+			g.uids as childUids
+		FROM
+			bg_user u
+		INNER JOIN (
+			SELECT
+				parent_uid AS userId,
+				count(uid) AS num,
+				GROUP_CONCAT(uid) AS uids
+			FROM
+				bg_user
+			GROUP BY
+				parent_uid
+		) g ON g.userId = u.uid
+		WHERE
+			u.auth_status = 1
+			AND u.`level` &lt; 3
+			AND g.num &gt;= 1
+	</select>
+
+	<select id="listDockUserByCustomerServiceId" parameterType="Long" resultType="BigoUserEntity">
+		select
+			IFNULL(u.phone, u.email) as username,
+			u.uid,
+			u.avatar,
+			u.nick_name as nickName,
+		    count(msg.id) as unreadNum,
+			(select MAX(bm.create_time) from bg_message bm where bm.sender = u.uid) as lastMsgTime
+		from bg_user u
+		left join bg_dock_info di on di.uid = u.uid
+		left join bg_message msg on msg.sender = di.uid and msg.status=0
+		where di.customer_service_id = #{customerServiceId} GROUP BY di.uid
+	</select>
+
+	<select id="getInvitedNumber" parameterType="map" resultType="java.lang.Long">
+		select
+		count(1)
+		from bg_user
+		where 1=1
+		<if test="uid != null">and parent_uid = #{uid}</if>
+		<if test="beginTime != null">and register_time &gt;= #{beginTime}</if>
+		<if test="endTime != null">and register_time &lt;= #{endTime}</if>
+
+	</select>
+
+	<select id="getChildrenList" parameterType="BigoUserEntity" resultType="BigoUserEntity">
+		SELECT
+			u.uid,
+			u.avatar,
+			IFNULL(u.email, u.phone) AS username,
+			u.nick_name AS nickName,
+			u.phone,
+			u.agent_type AS agentType,
+			u.`level`,
+			u.parent_uid AS parentUid,
+			u.`status`,
+			u.auth_status AS authStatus,
+			u.auth_photos AS authPhotos,
+			u.real_name AS realName,
+			u.id_num AS idNum,
+			u. PASSWORD,
+			u.pay_password AS payPassword,
+			u.sex,
+			u.area_id AS areaId,
+			u. PROFILE,
+			u.email,
+			u.contract_info AS contractInfo,
+			u.last_login_ip AS lastLoginIp,
+			u.last_login_time AS lastLoginTime,
+			u.register_ip AS registerIp,
+			u.register_time AS registerTime,
+			u.country as country,
+			u.driver_license as driverLicense,
+			u.auth_type as authType,
+		IFNULL(pu.phone,pu.email) as parentName
+		FROM
+			(
+				select * from bg_user where uid in(
+				select b.uid from (
+				WITH RECURSIVE user_view as
+				(select uid,parent_uid from bg_user where parent_uid= #{agentIds}
+				union all
+				select B.uid, B.parent_uid from user_view A,bg_user B where A.uid=B.parent_uid)
+				select * from user_view)b)
+			) u
+		LEFT JOIN bg_user pu ON u.parent_uid = pu.uid
+		<where>
+			<if test="username != null and username !=''">
+				and (u.phone like concat('%',#{username},'%') or u.email like concat('%',#{username},'%'))
+			</if>
+			<if test="uid != null">
+				and u.uid = #{uid}
+			</if>
+			<if test="parentName != null and parentName!=''">
+				and (pu.phone like concat('%',#{parentName},'%') or pu.email like concat('%',#{parentName},'%'))
+			</if>
+			<if test="status != null">
+				and u.status = #{status}
+			</if>
+			<if test="authStatus != null">
+				and u.auth_status = #{authStatus}
+			</if>
+			<if test="authFlag != null">
+				and u.auth_status != 0
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(u.register_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+	</select>
+
+	<select id="getRechargeUser" resultType="java.lang.String">
+		select email from send_email where is_send = 0 limit 0,100
+	</select>
+
+	<select id="getLowerUids" parameterType="java.lang.Long" resultType="java.lang.Long">
+		select b.uid from (
+							  WITH RECURSIVE user_view as
+												 (select uid,parent_uid from bg_user where parent_uid= #{parentUid}
+												  union all
+												  select B.uid, B.parent_uid from user_view A,bg_user B where A.uid=B.parent_uid)
+							  select * from user_view)b
+	</select>
+	<select id="updateSendEmailStatus" parameterType="java.lang.String">
+		update send_email set is_send = 1 where email = #{email}
+	</select>
+
+	<select id="listParentUids" parameterType="java.lang.Long" resultType="BigoUser">
+		with recursive t as
+						   (
+							   select * from bg_user where uid = #{uid}
+							   union all
+							   select a.* from bg_user a join t on a.uid = t.parent_uid
+						   )
+		select uid,parent_uid as parentUid,top_uid as topUid,level, top_level as topLevel from t
+	</select>
+
+	<select id="editUserTopUid">
+		update bg_user set top_uid = #{topUid} where uid in
+		<foreach collection="uidList" item="uid" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+	</select>
+
+</mapper> 

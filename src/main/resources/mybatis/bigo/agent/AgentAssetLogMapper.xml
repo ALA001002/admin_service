@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.agent.mapper.AgentAssetLogMapper">
+
+	<insert id="insertLog" parameterType="AssetLog" useGeneratedKeys="true" keyProperty="id">
+ 		insert into bg_agent_asset_log(
+			agent_id, `type`, dim, coin, `before`, amount, `after`, fee, contract_id, create_time
+ 		) value (
+			#{agentId}, #{type}, #{dim}, #{coin},#{before}, #{amount}, #{after}, #{fee}, #{contractId}, now()
+ 		)
+	</insert>
+
+	<select id="listByEntity" parameterType="AgentAssetLog" resultType="AgentAssetLog">
+		select
+			log.id,
+			log.type,
+			log.dim,
+			log.coin,
+			log.before,
+			log.amount,
+			log.fee,
+			log.after,
+			log.agent_id as agentId,
+			log.contract_id as contractId,
+			log.create_time as createTime,
+			ag.agent_name as agentName
+		from bg_agent_asset_log log
+		left join bg_agent ag on log.agent_id = ag.agent_id
+		<where>
+			<if test="coin != null">
+				and log.coin = #{coin}
+			</if>
+			<if test="agentName != null">
+				and ag.agent_name like concat('%',#{agentName},'%')
+			</if>
+			<if test="agentId != null">
+				and log.agent_id = #{agentId}
+			</if>
+			<if test="type != null">
+				and log.type = #{type}
+			</if>
+			<if test="beginTime != null and beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(log.create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+			</if>
+			<if test="endTime != null and endTime != ''"><!-- 结束时间检索 -->
+				and date_format(log.create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+			</if>
+		</where>
+		order by log.id desc
+	</select>
+	
+</mapper> 

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.WalletTransactionStatusMapper">
+    
+    <resultMap type="WalletTransactionStatus" id="WalletTransactionStatusResult">
+        <result property="id"    column="id"    />
+        <result property="currency"    column="currency"    />
+        <result property="blockCount"    column="block_count"    />
+        <result property="hash"    column="hash"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectWalletTransactionStatusVo">
+        select id, currency, block_count, hash, status, create_time from wallet_transaction_status
+    </sql>
+
+    <select id="selectWalletTransactionStatusList" parameterType="WalletTransactionStatus" resultMap="WalletTransactionStatusResult">
+        <include refid="selectWalletTransactionStatusVo"/>
+        <where>  
+            <if test="currency != null  and currency != ''"> and currency = #{currency}</if>
+            <if test="blockCount != null "> and block_count = #{blockCount}</if>
+            <if test="hash != null  and hash != ''"> and hash = #{hash}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectWalletTransactionStatusById" parameterType="Long" resultMap="WalletTransactionStatusResult">
+        <include refid="selectWalletTransactionStatusVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWalletTransactionStatus" parameterType="WalletTransactionStatus" useGeneratedKeys="true" keyProperty="id">
+        insert into wallet_transaction_status
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="currency != null">currency,</if>
+            <if test="blockCount != null">block_count,</if>
+            <if test="hash != null">hash,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="currency != null">#{currency},</if>
+            <if test="blockCount != null">#{blockCount},</if>
+            <if test="hash != null">#{hash},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWalletTransactionStatus" parameterType="WalletTransactionStatus">
+        update wallet_transaction_status
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="currency != null">currency = #{currency},</if>
+            <if test="blockCount != null">block_count = #{blockCount},</if>
+            <if test="hash != null">hash = #{hash},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWalletTransactionStatusById" parameterType="Long">
+        delete from wallet_transaction_status where id = #{id}
+    </delete>
+
+    <delete id="deleteWalletTransactionStatusByIds" parameterType="String">
+        delete from wallet_transaction_status where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

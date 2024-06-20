@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.pay.mapper.BankInfoMapper">
+    
+    <resultMap type="BankInfo" id="BankInfoResult">
+        <result property="id"    column="id"    />
+        <result property="countryCh"    column="country_ch"    />
+        <result property="countryEn"    column="country_en"    />
+        <result property="mobilePrefix"    column="mobile_prefix"    />
+        <result property="bankCode"    column="bank_code"    />
+        <result property="bankName"    column="bank_name"    />
+        <result property="bankNumber"    column="bank_number"    />
+        <result property="status"    column="status"    />
+        <result property="currency"    column="currency"    />
+    </resultMap>
+
+    <sql id="selectBankInfoVo">
+        select id, country_ch, country_en, mobile_prefix, bank_code, bank_name, bank_number, status,currency from bg_bank_info
+    </sql>
+
+    <select id="selectBankInfoList" parameterType="BankInfo" resultMap="BankInfoResult">
+        <include refid="selectBankInfoVo"/>
+        <where>  
+            <if test="countryCh != null  and countryCh != ''"> and country_ch = #{countryCh}</if>
+            <if test="countryEn != null  and countryEn != ''"> and country_en = #{countryEn}</if>
+            <if test="mobilePrefix != null  and mobilePrefix != ''"> and mobile_prefix = #{mobilePrefix}</if>
+            <if test="bankCode != null  and bankCode != ''"> and bank_code = #{bankCode}</if>
+            <if test="bankName != null  and bankName != ''"> and bank_name like concat('%', #{bankName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBankInfoById" parameterType="Long" resultMap="BankInfoResult">
+        <include refid="selectBankInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBankInfo" parameterType="BankInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_bank_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="countryCh != null">country_ch,</if>
+            <if test="countryEn != null">country_en,</if>
+            <if test="mobilePrefix != null">mobile_prefix,</if>
+            <if test="bankCode != null">bank_code,</if>
+            <if test="bankName != null">bank_name,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="countryCh != null">#{countryCh},</if>
+            <if test="countryEn != null">#{countryEn},</if>
+            <if test="mobilePrefix != null">#{mobilePrefix},</if>
+            <if test="bankCode != null">#{bankCode},</if>
+            <if test="bankName != null">#{bankName},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBankInfo" parameterType="BankInfo">
+        update bg_bank_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="countryCh != null">country_ch = #{countryCh},</if>
+            <if test="countryEn != null">country_en = #{countryEn},</if>
+            <if test="mobilePrefix != null">mobile_prefix = #{mobilePrefix},</if>
+            <if test="bankCode != null">bank_code = #{bankCode},</if>
+            <if test="bankName != null">bank_name = #{bankName},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBankInfoById" parameterType="Long">
+        delete from bg_bank_info where id = #{id}
+    </delete>
+
+    <delete id="deleteBankInfoByIds" parameterType="String">
+        delete from bg_bank_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

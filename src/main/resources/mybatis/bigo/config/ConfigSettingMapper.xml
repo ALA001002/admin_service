@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.config.mapper.ConfigSettingMapper">
+
+	<select id="getConfigSetting" resultType="ConfigSetting">
+		select * from bg_config_setting
+	</select>
+
+	<update id="update" parameterType="ConfigSetting">
+		UPDATE bg_config_setting
+		SET withdrawCount = #{withdrawCount},
+			withdrawFee = #{withdrawFee},
+			usdtRechargeMin = #{usdtRechargeMin},
+			usdtWithdrawMin = #{usdtWithdrawMin},
+			externalWithdrawStatus = #{externalWithdrawStatus},
+			emailRegisterStatus = #{emailRegisterStatus},
+			smsRegisterStatus = #{smsRegisterStatus},
+			rebateStatus = #{rebateStatus},
+			firstLevelRebate = #{firstLevelRebate},
+			twoLevelRebate = #{twoLevelRebate},
+			threeLevelRebate = #{threeLevelRebate},
+			extraLevelRebate = #{extraLevelRebate},
+			mostRebateLevel = #{mostRebateLevel},
+			usdtRecharge = #{usdtRecharge},
+			ethRecharge = #{ethRecharge},
+			btcRecharge = #{btcRecharge},
+			usdtManualRecharge = #{usdtManualRecharge},
+			ethManualRecharge = #{ethManualRecharge},
+			btcManualRecharge =  #{btcManualRecharge},
+			delayedScoreStatus = #{delayedScoreStatus},
+			delayedTime = #{delayedTime},
+		    loanStatus = #{loanStatus},
+			timeContractStatus = #{timeContractStatus},
+			tradeFeeRebate = #{tradeFeeRebate},
+			probabilityRebate = #{probabilityRebate},
+			authRewardStatus = #{authRewardStatus},
+			authRewardNum = #{authRewardNum},
+			multiAddressStatus = #{multiAddressStatus},
+			firstRechargeStatus= #{firstRechargeStatus},
+        	firstRechargeComplyAmount = #{firstRechargeComplyAmount},
+        	firstRechargeRewards = #{firstRechargeRewards},
+        	firstRechargeSuperRewards = #{firstRechargeSuperRewards},
+			ipRegisterCount=#{ipRegisterCount},
+			registerGiveLockAmount = #{registerGiveLockAmount}
+	</update>
+
+</mapper>

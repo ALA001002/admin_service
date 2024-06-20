@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.system.mapper.SysIndexMapper">
+
+	<!-- 获取用户数量 -->
+	<select id="getUserNum" parameterType="Map" resultType="Long">
+		select count(1) from bg_user where `status` != 2
+		<if test="agentId != null"> and top_uid = #{agentId}</if>
+		<if test="startTime != null"> and register_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and register_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取订单数量 -->
+	<select id="getOrderNum" parameterType="Map" resultType="Long">
+		select count(1) from bg_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bu.status != 2 and currency != 'VST'
+		<if test="startTime != null"> and bc.sell_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.sell_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取订单金额 -->
+	<select id="getOrderMoney" parameterType="Map" resultType="BigDecimal">
+		select IFNULL(sum(money),0) from bg_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bu.status != 2 and currency != 'VST'
+		<if test="startTime != null"> and bc.sell_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.sell_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取订单手续费 -->
+	<select id="getOrderFee" parameterType="Map" resultType="BigDecimal">
+		select IFNULL(sum(fee),0) from bg_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bu.status != 2 and currency != 'VST'
+		<if test="startTime != null"> and bc.sell_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.sell_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取订单盈亏 -->
+	<select id="getProfit" parameterType="java.util.Map" resultType="BigDecimal">
+		select IFNULL(sum(profit),0) from bg_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bu.status != 2 and currency != 'VST'
+		<if test="profitType != null"> and bc.profit_type = #{profitType}</if>
+		<if test="startTime != null"> and bc.sell_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.sell_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取用户充提 -->
+	<select id="getWithdrawInfo" parameterType="java.util.Map" resultType="BigDecimal">
+		select IFNULL(sum(money),0) from t_withdraw
+		where `status`=1
+		<if test="type != null"> and `type` = #{type}</if>
+		<if test="startTime != null"> and create_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and create_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取用户充提手续费 -->
+	<select id="getWithdrawFee" parameterType="java.util.Map" resultType="BigDecimal">
+		select IFNULL(sum(fee),0) from t_withdraw
+		where `status`=1
+		<if test="startTime != null"> and create_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and create_time &lt;= #{endTime}</if>
+	</select>
+
+
+
+	<!-- 获取期权订单盈亏 -->
+	<select id="getTimeProfit" parameterType="java.util.Map" resultType="BigDecimal">
+		select IFNULL(sum(profit),0) from bg_time_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where  bc.currency != 'VST' and bu.status != 2
+		<if test="uid != null"> and bu.top_uid = #{uid}</if>
+		<if test="profitType != null"> and bc.profit_type = #{profitType}</if>
+		<if test="startTime != null"> and bc.settlement_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.settlement_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取期权订单数量 -->
+	<select id="getTimeOrderNum" parameterType="Map" resultType="Long">
+		select count(1) from bg_time_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bc.currency != 'VST' and bu.status != 2
+		<if test="uid != null"> and bu.top_uid = #{uid}</if>
+		<if test="startTime != null"> and bc.settlement_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.settlement_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取期权订单金额 -->
+	<select id="getTimeOrderMoney" parameterType="Map" resultType="BigDecimal">
+		select IFNULL(sum(money),0) from bg_time_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bc.currency != 'VST' and bu.status != 2
+		<if test="uid != null"> and bu.top_uid = #{uid}</if>
+		<if test="startTime != null"> and bc.settlement_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.settlement_time &lt;= #{endTime}</if>
+	</select>
+
+	<!-- 获取订单手续费 -->
+	<select id="getTimeOrderFee" parameterType="Map" resultType="BigDecimal">
+		select IFNULL(sum(fee),0) from bg_time_contract bc
+		left join bg_user bu on bc.uid = bu.uid
+		where bc.currency != 'VST' and bu.status != 2
+		<if test="uid != null"> and bu.top_uid = #{uid}</if>
+		<if test="startTime != null"> and bc.settlement_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and bc.settlement_time &lt;= #{endTime}</if>
+	</select>
+
+	<select id="getWithdrawInfoList" parameterType="java.util.Map" resultType="java.util.Map">
+	c
+	</select>
+
+
+	<select id="getFirstDepositUserNum" parameterType="java.util.Map" resultType="Long">
+		select count(*) from (select B.uid,min(verify_time) as verify_time from t_withdraw A,
+		bg_user B
+		where A.uid = B.uid
+		  and A.type=4
+		and A.check_status = 1
+		and A.status = 1
+		<if test="uid != null"> and B.top_uid = #{uid}</if>
+		group by B.uid ) A
+		where
+		1=1
+		<if test="startTime != null"> and verify_time &gt;= #{startTime}</if>
+		<if test="endTime != null">and verify_time &lt;= #{endTime}</if>
+	</select>
+
+	<select id="getManualList" parameterType="java.util.Map" resultType="java.util.Map">
+		select  B.type,sum(B.money) money,B.coin,sum(B.fee) fee from
+		(select A.type, sum(A.money) money,if(A.coin='USDT_TRC20','USDT',A.coin) coin,sum(ifnull(fee,0)) fee
+		from t_withdraw A
+		where 1=1
+		<if test="startTime != null"> and verify_time  &gt;= #{startTime}</if>
+		<if test="endTime != null">and verify_time &lt;= #{endTime}</if>
+		and A.check_status = 1
+		and A.status = 1
+		and A.type = 1
+		group by A.type,A.coin ) B group by B.type,B.coin
+	</select>
+
+	<select id="sumUserBalance" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+		SELECT
+			sum(ifnull(balance,0))
+		FROM
+			bg_wallet bw,
+			bg_user bu
+		WHERE
+			bw.uid = bu.uid
+			AND bw.currency = #{coin}
+			AND bu.`status` != 2
+			<if test="agentId != null"> and bu.top_uid = #{agentId}</if>
+	</select>
+
+	<select id="getRechargeNum" parameterType="java.util.Map" resultType="java.lang.Long">
+		select count(1) from(
+								SELECT
+									ifnull(COUNT(1),0)
+								FROM
+									t_withdraw tw,
+									bg_user bu
+								WHERE
+								  tw.uid = bu.uid
+								  AND tw.type IN (4, 5)
+								  AND tw.status = 1
+								  AND tw.check_status = 1
+								<if test="agentId != null"> and bu.top_uid = #{agentId}</if>
+								GROUP BY
+									tw.uid) t
+	</select>
+
+</mapper> 

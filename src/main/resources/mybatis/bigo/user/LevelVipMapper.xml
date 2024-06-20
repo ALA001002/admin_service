@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.userinfo.mapper.LevelVipMapper">
+    
+    <resultMap type="LevelVip" id="LevelVipResult">
+        <result property="id"    column="id"    />
+        <result property="level"    column="level"    />
+        <result property="levelOne"    column="level_one"    />
+        <result property="levelTwo"    column="level_two"    />
+        <result property="levelThree"    column="level_three"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectLevelVipVo">
+        select id, level, level_one, level_two, level_three, create_time from bg_level_vip
+    </sql>
+
+    <select id="selectLevelVipList" parameterType="LevelVip" resultMap="LevelVipResult">
+        <include refid="selectLevelVipVo"/>
+        <where>  
+            <if test="level != null "> and level = #{level}</if>
+            <if test="levelOne != null "> and level_one = #{levelOne}</if>
+            <if test="levelTwo != null "> and level_two = #{levelTwo}</if>
+            <if test="levelThree != null "> and level_three = #{levelThree}</if>
+        </where>
+    </select>
+    
+    <select id="selectLevelVipById" parameterType="Long" resultMap="LevelVipResult">
+        <include refid="selectLevelVipVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLevelVip" parameterType="LevelVip" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_level_vip
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="level != null">level,</if>
+            <if test="levelOne != null">level_one,</if>
+            <if test="levelTwo != null">level_two,</if>
+            <if test="levelThree != null">level_three,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="level != null">#{level},</if>
+            <if test="levelOne != null">#{levelOne},</if>
+            <if test="levelTwo != null">#{levelTwo},</if>
+            <if test="levelThree != null">#{levelThree},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLevelVip" parameterType="LevelVip">
+        update bg_level_vip
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="level != null">level = #{level},</if>
+            <if test="levelOne != null">level_one = #{levelOne},</if>
+            <if test="levelTwo != null">level_two = #{levelTwo},</if>
+            <if test="levelThree != null">level_three = #{levelThree},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLevelVipById" parameterType="Long">
+        delete from bg_level_vip where id = #{id}
+    </delete>
+
+    <delete id="deleteLevelVipByIds" parameterType="String">
+        delete from bg_level_vip where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

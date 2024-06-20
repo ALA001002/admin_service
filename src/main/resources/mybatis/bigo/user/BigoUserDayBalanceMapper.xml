@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.userinfo.mapper.BgUserDayBalanceMapper">
+
+	<resultMap type="BgUserDayBalance" id="BigoUserResult">
+		<id     property="id"       		column="id"      />
+		<result property="createTime"       	column="create_time"      />
+		<result property="userId"     	column="user_id"    />
+		<result property="day_no"        	column="dayNo"        />
+		<result property="balance"  		column="balance"  />
+	</resultMap>
+	<insert id="insertBalance" parameterType="BgUserDayBalance" useGeneratedKeys="true">
+		insert into bg_user_day_balance(
+			user_id,day_no,balance,create_time
+		)values(
+		#{userId},#{dayNo},#{balance},now())
+	</insert>
+
+	<select id="findByUserIdAndDayNo" parameterType="BgUserDayBalance" resultType="BgUserDayBalance">
+		select * from bg_user_day_balance
+		where
+		1=1
+		<if test="userId != null">and user_id=#{userId}</if>
+		<if test="dayNo != null">and day_no=#{dayNo}</if>
+		<if test="createTime != null">and create_time = #{createTime}</if>
+	</select>
+
+	<select id="findByUserId" parameterType="long" resultType="BgUserDayBalance">
+		select * from bg_user_day_balance where user_id=#{userId} order by day_no desc limit 1
+	</select>
+	<select id="findByUserIdToDay" parameterType="long" resultType="java.lang.String">
+		select balance from bg_user_day_balance where user_id=#{userId} and to_days(create_time) = to_days(now()) limit 1
+	</select>
+
+	<update id="updateToDayBalance" parameterType="BgUserDayBalance">
+		update bg_user_day_balance set balance = #{balance} where user_id=#{userId} and to_days(create_time) = to_days(now())
+	</update>
+</mapper>

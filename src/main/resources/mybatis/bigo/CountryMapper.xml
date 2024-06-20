@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.country.mapper.CountryMapper">
+
+	
+	<select id="listCountryInfo" resultType="CountryInfoVO">
+		select
+		    id as areaId,
+		    country_en as country,
+		    mobile_prefix as areaCode
+		from t_country_info where `status` = 1
+	</select>
+	<select id="getId" resultType="CountryInfoVO" parameterType="java.lang.Long">
+		select
+			id as areaId,
+			country_en as country,
+			mobile_prefix as areaCode
+		from t_country_info where id=#{id}
+	</select>
+	
+</mapper> 

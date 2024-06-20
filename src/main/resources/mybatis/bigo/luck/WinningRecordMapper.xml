@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.luck.mapper.WinningRecordMapper">
+    
+    <resultMap type="WinningRecord" id="WinningRecordResult">
+        <result property="id"    column="id"    />
+        <result property="uid"    column="uid"    />
+        <result property="coin"    column="coin"    />
+        <result property="num"    column="num"    />
+        <result property="lotteryCode"    column="lottery_code"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectWinningRecordVo">
+        select id, uid, coin, num, create_time from bg_winning_record
+    </sql>
+
+    <select id="selectWinningRecordList" parameterType="WinningRecord" resultType="WinningRecord">
+        SELECT
+            bwr.id,
+            bwr.uid,
+            bwr.coin,
+            bwr.num,
+            bwr.create_time as createTime,
+            bwr.lottery_code as lotteryCode,
+            IFNULL(u.phone, u.email) as username
+        FROM
+            bg_winning_record bwr left join bg_user u on bwr.uid = u.uid
+        <where>  
+            <if test="uid != null "> and bwr.uid = #{uid}</if>
+            <if test="coin != null  and coin != ''"> and bwr.coin = #{coin}</if>
+            <if test="num != null "> and bwr.num = #{num}</if>
+            <if test="beginTime != null "> and bwr.create_time &gt;= #{beginTime}</if>
+            <if test="endTime != null "> and bwr.create_time &lt;= #{endTime}</if>
+            <if test="username != null and username != ''"> and (u.phone = #{username} or u.email = #{username})</if>
+            <if test="agentId != null"> and u.top_uid = #{agentId}</if>
+        </where>
+        order by bwr.create_time desc
+    </select>
+    
+    <select id="selectWinningRecordById" parameterType="Long" resultMap="WinningRecordResult">
+        <include refid="selectWinningRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWinningRecord" parameterType="WinningRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_winning_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid != null">uid,</if>
+            <if test="coin != null">coin,</if>
+            <if test="num != null">num,</if>
+            <if test="lotteryCode != null">lottery_code,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uid != null">#{uid},</if>
+            <if test="coin != null">#{coin},</if>
+            <if test="num != null">#{num},</if>
+            <if test="lotteryCode != null">#{lotteryCode},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWinningRecord" parameterType="WinningRecord">
+        update bg_winning_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="coin != null">coin = #{coin},</if>
+            <if test="num != null">num = #{num},</if>
+            <if test="lotteryCode != null">lottery_code = #{lotteryCode},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWinningRecordById" parameterType="Long">
+        delete from bg_winning_record where id = #{id}
+    </delete>
+
+    <delete id="deleteWinningRecordByIds" parameterType="String">
+        delete from bg_winning_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

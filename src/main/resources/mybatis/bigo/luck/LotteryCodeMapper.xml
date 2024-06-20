@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.luck.mapper.LotteryCodeMapper">
+    
+    <resultMap type="LotteryCode" id="LotteryCodeResult">
+        <result property="id"    column="id"    />
+        <result property="lotteryCode"    column="lottery_code"    />
+        <result property="uid"    column="uid"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="overdueTime"    column="overdue_time"    />
+        <result property="createBy"   column="create_by"   />
+    </resultMap>
+
+    <sql id="selectLotteryCodeVo">
+        select id, lottery_code, uid, status, create_time, overdue_time from bg_lottery_code
+    </sql>
+
+    <select id="selectLotteryCodeList" parameterType="LotteryCode" resultType="LotteryCode">
+        SELECT
+        blc.id,
+        blc.lottery_code as lotteryCode,
+        blc.uid,
+        blc.status,
+        blc.create_time as createTime,
+        blc.overdue_time as overdueTime,
+        IFNULL(u.phone, u.email) as username
+        FROM
+            bg_lottery_code blc left join bg_user u on blc.uid = u.uid
+        <where>  
+            <if test="lotteryCode != null  and lotteryCode != ''"> and blc.lottery_code = #{lotteryCode}</if>
+            <if test="uid != null "> and blc.uid = #{uid}</if>
+            <if test="status != null "> and blc.status = #{status}</if>
+            <if test="overdueTime != null "> and blc.overdue_time = #{overdueTime}</if>
+            <if test="username != null "> and (u.phone = #{username} or u.email = #{username})</if>
+            <if test="agentId != null"> and u.top_uid=#{agentId}</if>
+        </where>
+    </select>
+    
+    <select id="selectLotteryCodeById" parameterType="Long" resultMap="LotteryCodeResult">
+        <include refid="selectLotteryCodeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertLotteryCode" parameterType="LotteryCode" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_lottery_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="lotteryCode != null">lottery_code,</if>
+            <if test="uid != null">uid,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="overdueTime != null">overdue_time,</if>
+            <if test="createBy != null">create_by</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="lotteryCode != null">#{lotteryCode},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="overdueTime != null">#{overdueTime},</if>
+            <if test="createBy != null">#{createBy}</if>
+         </trim>
+    </insert>
+
+    <update id="updateLotteryCode" parameterType="LotteryCode">
+        update bg_lottery_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lotteryCode != null">lottery_code = #{lotteryCode},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="overdueTime != null">overdue_time = #{overdueTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLotteryCodeById" parameterType="Long">
+        delete from bg_lottery_code where id = #{id}
+    </delete>
+
+    <delete id="deleteLotteryCodeByIds" parameterType="String">
+        delete from bg_lottery_code where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="countByLotteryCode" parameterType="String" resultType="int">
+        select count(1) from bg_lottery_code where lottery_code = #{code}
+    </select>
+
+    <select id="getCode" parameterType="LotteryCode" resultType="LotteryCode">
+        SELECT
+            id,
+            lottery_code AS lotteryCode,
+            uid,
+            STATUS,
+            create_time AS createTime,
+            overdue_time AS overdueTime
+        FROM
+            bg_lottery_code
+        <where>
+            <if test="uid != null">and uid = #{uid}</if>
+            <if test="lotteryCode != null and lotteryCode != ''">and lottery_code = #{lotteryCode}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+
+    </select>
+
+</mapper>

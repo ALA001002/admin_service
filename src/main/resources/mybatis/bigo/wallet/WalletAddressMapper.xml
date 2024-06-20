@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.wallet.mapper.WalletAddressMapper">
+
+	<resultMap type="WalletAddress" id="WalletAddressResult">
+		<id     property="id"           column="id" />
+		<result property="uid"       	column="uid" />
+		<result property="address"       	column="address" />
+		<result property="coin"     column="coin" />
+		<result property="balance"      column="balance" />
+		<result property="error"      column="error" />
+		<result property="hash"      column="hash" />
+		<result property="status"      column="status" />
+	</resultMap>
+	<sql id="selectWalletAddressVo">
+        select id, uid, address, coin, balance, status, hash, error, check_time from wallet_address
+    </sql>
+	<insert id="batchInsert">
+		insert into wallet_address(uid,coin,balance,error) values
+		<foreach item="wallet" index="index" collection="list" separator=",">
+			(#{wallet.uid}, #{wallet.coin}, 0, #{wallet.error})
+		</foreach>
+	</insert>
+
+	<select id="getByAddressAndCoin" parameterType="WalletAddress" resultMap="WalletAddressResult">
+		select * from wallet_address where address = #{address} and coin = #{coin}
+	</select>
+	
+	<select id="getAddressByCoin" parameterType="WalletAddress" resultType="String">
+		select address from wallet_address where 1=1 <if test="coin !=null">and coin=#{coin}</if> and uid=#{uid}
+	</select>
+
+	<select id="isAddressExist" parameterType="WalletAddress" resultType="Integer">
+		select count(1) from wallet_address where 1=1 <if test="coin !=null">and coin=#{coin}</if>  and address=#{address}
+	</select>
+
+	<select id="getAddressCoin" parameterType="WalletAddress" resultMap="WalletAddressResult">
+		select * from wallet_address where coin = #{coin} <if test="error != null">and error = #{error}</if>
+	</select>
+
+	<insert id="saveAddress">
+		insert into wallet_address(uid,coin,address,balance,error) values (#{uid}, #{coin},#{address}, 0, #{error})
+	</insert>
+
+	<update id="updateAddress" parameterType="WalletAddress">
+		update wallet_address  set address = #{address} <if test="error != null">,error = null</if>  where uid = #{uid} and coin=#{coin}
+	</update>
+
+	<select id="selectWalletAddressById" parameterType="Long" resultMap="WalletAddressResult">
+		<include refid="selectWalletAddressVo"/>
+		where id = #{id}
+	</select>
+
+	<select id="selectWalletAddressList" parameterType="WalletAddress" resultMap="WalletAddressResult">
+		SELECT
+		wa.id,
+		wa.uid,
+		IFNULL(bu.phone, bu.email) as username,
+		wa.address,
+		wa.coin,
+		wa.balance,
+		wa.status,
+		wa.hash,
+		wa.error,
+		wa.check_time
+		FROM
+		wallet_address wa left join bg_user bu on wa.uid = bu.uid
+		<where>
+			<if test="uid != null "> and wa.uid = #{uid}</if>
+			<if test="address != null  and address != ''"> and wa.address = #{address}</if>
+			<if test="coin != null  and coin != ''"> and wa.coin = #{coin}</if>
+			 <if test="balance != null">and wa.balance &gt;= #{balance}</if>
+			<if test="username != null and username !=''">
+				and (bu.phone like concat('%',#{username},'%') or bu.email like concat('%',#{username},'%'))
+			</if>
+		</where>
+	</select>
+</mapper> 

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.ico.mapper.SymbolCoinMapper">
+    
+    <resultMap type="SymbolCoin" id="SymbolCoinResult">
+        <result property="id"    column="id"    />
+        <result property="enumName"    column="enum_name"    />
+        <result property="code"    column="code"    />
+        <result property="name"    column="name"    />
+        <result property="status"    column="status"    />
+        <result property="tradeCount"    column="trade_count"    />
+        <result property="lockoutEndTime"    column="lockout_end_time"    />
+    </resultMap>
+
+    <sql id="selectSymbolCoinVo">
+        select id, enum_name, code, name, status,trade_count, lockout_end_time from bg_symbol_coin
+    </sql>
+
+    <select id="selectSymbolCoinList" parameterType="SymbolCoin" resultMap="SymbolCoinResult">
+        <include refid="selectSymbolCoinVo"/>
+        <where>  
+            <if test="enumName != null  and enumName != ''"> and enum_name like concat('%', #{enumName}, '%')</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="lockoutEndTime != null "> and lockout_end_time = #{lockoutEndTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectSymbolCoinById" parameterType="Long" resultMap="SymbolCoinResult">
+        <include refid="selectSymbolCoinVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSymbolCoin" parameterType="SymbolCoin" useGeneratedKeys="true" keyProperty="id">
+        insert into bg_symbol_coin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="enumName != null">enum_name,</if>
+            <if test="code != null">code,</if>
+            <if test="name != null">name,</if>
+            <if test="status != null">status,</if>
+            <if test="tradeCount != null">trade_count,</if>
+            <if test="lockoutEndTime != null">lockout_end_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="enumName != null">#{enumName},</if>
+            <if test="code != null">#{code},</if>
+            <if test="name != null">#{name},</if>
+            <if test="status != null">#{status},</if>
+            <if test="tradeCount != null">#{tradeCount},</if>
+            <if test="lockoutEndTime != null">#{lockoutEndTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSymbolCoin" parameterType="SymbolCoin">
+        update bg_symbol_coin
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="enumName != null">enum_name = #{enumName},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="tradeCount != null">trade_count = #{tradeCount},</if>
+            <if test="lockoutEndTime != null">lockout_end_time = #{lockoutEndTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSymbolCoinById" parameterType="Long">
+        delete from bg_symbol_coin where id = #{id}
+    </delete>
+
+    <delete id="deleteSymbolCoinByIds" parameterType="String">
+        delete from bg_symbol_coin where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

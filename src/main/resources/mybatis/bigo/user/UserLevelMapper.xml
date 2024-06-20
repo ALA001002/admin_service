@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigo.project.bigo.userinfo.mapper.UserLevelMapper">
+
+	<resultMap type="UserLevel" id="UserLevelResult">
+		<id     property="id"       	column="id"      />
+		<result property="level"       	column="level"  />
+		<result property="name"     	column="name"  />
+		<result property="requireUser"     column="require_user"     />
+		<result property="requireFee"  		column="require_fee"  />
+		<result property="fee"        column="fee"   />
+		<result property="firstRate"       	column="first_rate"    />
+		<result property="secondRate"    column="second_rate"   />
+		<result property="limitAuth"  		column="limit_auth"  />
+		<result property="limitNoAuth"        column="limit_no_auth"   />
+		<result property="limitExamine"       	column="limit_examine"    />
+		<result property="createTime"    column="create_time"   />
+		<result property="operatorId"       	column="operator_id"    />
+		<result property="updateTime"    column="update_time"   />
+	</resultMap>
+
+	<select id="getByLevel" parameterType="Integer" resultMap="UserLevelResult">
+		select * from bg_level where `level` = #{level}
+	</select>
+
+	<select id="getByUid" parameterType="Long" resultMap="UserLevelResult">
+		select l.* from bg_level l left join bg_user u on l.level = u.level where u.uid = #{uid}
+	</select>
+	
+</mapper> 
