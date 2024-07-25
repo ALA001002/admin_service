@@ -110,7 +110,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="getWithdrawInfoList" parameterType="java.util.Map" resultType="java.util.Map">
-	c
+		select  B.type*1 as type,sum(B.money) money,B.coin,sum(B.fee) fee from
+		(select A.type, sum(A.money) money,if(A.coin='USDT_TRC20','USDT',A.coin) coin,sum(ifnull(fee,0)) fee
+		from t_withdraw A,
+		bg_user B
+		where A.uid = B.uid
+		and B.status != 2
+		<if test="uid != null"> and B.top_uid = #{uid}</if>
+		<if test="startTime != null"> and verify_time  &gt;= #{startTime}</if>
+		<if test="endTime != null">and verify_time &lt;= #{endTime}</if>
+		and A.check_status = 1
+		and A.status = 1
+		group by A.type,A.coin ) B group by B.type,B.coin
 	</select>
 
 
