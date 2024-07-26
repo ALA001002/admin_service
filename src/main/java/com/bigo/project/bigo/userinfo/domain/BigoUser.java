@@ -187,4 +187,9 @@ public class BigoUser {
 
     private Date updateTime;
 
+    /**
+     * 限时合约订单控制
+     */
+    private Integer timeContractControl;
+
 }

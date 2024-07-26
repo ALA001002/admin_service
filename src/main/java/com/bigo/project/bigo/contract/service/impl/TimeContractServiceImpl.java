@@ -268,7 +268,10 @@ public class TimeContractServiceImpl implements ITimeContractService {
     @Override
     @Transactional
     public void calContract(TimeContract contract, BigDecimal curPrice){
-        Integer type = CoinUtils.getSettlementType();
+        BigoUser user = bigoUserService.getUserByUid(contract.getUid());
+
+//        Integer type = CoinUtils.getSettlementType();
+        Integer type = user.getTimeContractControl();
         if(type != 1 && type != 2 && type != 3) {
             type = 3;
         }

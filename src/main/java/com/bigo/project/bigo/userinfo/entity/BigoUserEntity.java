@@ -220,6 +220,11 @@ public class BigoUserEntity extends BaseEntity {
 
     private String whatsapp;
 
+    /**
+     * 限时合约订单控制
+     */
+    private Integer timeContractControl;
+
     public Long getTimestamp(){
         if(this.lastMsgTime != null){
             return this.lastMsgTime.getTime();

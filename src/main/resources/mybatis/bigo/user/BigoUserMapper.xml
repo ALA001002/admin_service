@@ -40,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="registerArea"       column="register_area"       />
 		<result property="whatsapp"       column="whatsapp"       />
 		<result property="remark"       column="remark"       />
+		<result property="timeContractControl"       column="time_contract_control"       />
 	</resultMap>
 	
 	<select id="getUserByUid" parameterType="Long" resultType="BigoUser">
@@ -76,6 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			u.last_login_area as lastLoginArea,
 			u.register_area as registerArea,
 			u.whatsapp as whatsapp,
+			u.time_contract_control as timeContractControl,
 			pu.phone as parentPhone,
 			pu.email as parentEamil,
 			tci.country_en as areaName
@@ -248,6 +250,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="remark != null">remark = #{remark},</if>
 			<if test="updateTime != null">update_time = #{updateTime},</if>
 			<if test="googleSecretStatus != null">google_secret_status = #{googleSecretStatus},</if>
+			<if test="timeContractControl != null">time_contract_control = #{timeContractControl},</if>
  		</set>
  		where uid = #{uid}
 	</update>
@@ -300,6 +303,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		u.register_area as registerArea,
 		u.whatsapp as whatsapp,
 		u.remark as remark,
+		u.time_contract_control as timeContractControl,
 		IFNULL(pu.phone,pu.email) as parentName,
 		tci.country_en as areaName,
 		IFNULL(u.phone, u.email) as username,
@@ -381,6 +385,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		u.register_area as registerArea,
 		u.whatsapp as whatsapp,
 		u.remark as remark,
+		u.time_contract_control as timeContractControl,
 		IFNULL(pu.phone,pu.email) as parentName,
 		tci.country_en as areaName,
 		IFNULL(u.phone, u.email) as username,
