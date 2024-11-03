@@ -134,24 +134,25 @@ public class BigoTimeContractController extends BaseController {
 
                 TimeContract contract = contractService.getById(id);
                 if(contract == null){
-                    logger.error("限时合约ID:{},订单不存在", id);
+                    logger.info("限时合约ID:{},订单不存在", id);
                     return AjaxResult.error("该订单不存在");
                 }
                 if(contract.getStatus() != ContractStatusEnum.OPEN.getType()){
-                    logger.error("限时合约ID:{},订单不是持仓状态", id);
+                    logger.info("限时合约ID:{},订单不是持仓状态", id);
                     return AjaxResult.error("该订单不是持仓状态");
                 }
                 contract.setSettlementType(type);
                 if(contractService.getVariablePrice(contract).compareTo(BigDecimal.ZERO) <= 0 ) {
-                    logger.error("限时合约ID:{},请先设置对应的交易对配置", id);
+                    logger.info("限时合约ID:{},请先设置对应的交易对配置", id);
                     return AjaxResult.error("请先设置对应的交易对配置");
                 }
                 if(contract.getSettlementTime().compareTo(new Date()) <= 0 ) {
-                    logger.error("限时合约ID:{},订单已过结算时间", id);
+                    logger.info("限时合约ID:{},订单已过结算时间", id);
                     return AjaxResult.error("该订单已过结算时间");
                 }
                 // 平仓
                 int status = contractService.oneKeyClose(contract, type);
+                logger.info("限时合约ID:{},修改状态status={},结算类型type={}",id,status,type);
             } catch (Exception e) {
                 e.printStackTrace();
                 return AjaxResult.error("一键盈亏出现错误");
