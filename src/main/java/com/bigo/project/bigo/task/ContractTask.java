@@ -10,6 +10,7 @@ import com.bigo.project.bigo.contract.service.IContractService;
 import com.bigo.project.bigo.contract.service.ITimeContractService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -102,6 +103,7 @@ public class ContractTask {
     /**
      * 扫描正在持仓中的限时合约
      */
+    @Scheduled(cron = "0/10 * * * * ?")
     public void timeContractTask() {
         try {
             //获取所有正在持仓中的合约
